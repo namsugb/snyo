@@ -1,0 +1,4 @@
+
+[mcp_servers.obsidian]                                                                                           
+command = "npx"                                                                                                  
+args = ["-y", "obsidian-mcp", "C:/My_projects/snyo/snyoVault"]  

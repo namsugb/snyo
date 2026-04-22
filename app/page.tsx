@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -67,45 +67,18 @@ function GalleryModal({
 function IntroOverlay({ isLeaving }: { isLeaving: boolean }) {
   return (
     <div
-      className={`intro-overlay fixed inset-0 z-50 flex items-center justify-center bg-background/98 px-6 ${isLeaving ? "intro-overlay-leave" : "intro-overlay-enter"
-        }`}
+      className={`intro-overlay fixed inset-0 z-50 bg-white ${isLeaving ? "intro-overlay-leave" : "intro-overlay-enter"}`}
       aria-hidden={isLeaving}
     >
-      <div className="relative flex w-full max-w-sm flex-col items-center text-center">
-        <div className="pointer-events-none absolute inset-x-8 top-8 h-40 rounded-full bg-[radial-gradient(circle,rgba(216,140,154,0.18),transparent_68%)] blur-3xl" />
-
-        <div className="relative">
-          <svg
-            viewBox="0 0 220 220"
-            className="intro-doodle h-56 w-56 text-ink-accent"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <g stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-              <path className="draw-path" d="M55 84c8-11 18-18 31-20 12-2 24 2 33 11" />
-              <path className="draw-path delay-1" d="M116 76c12-10 23-15 35-13 11 1 21 8 29 20" />
-              <circle className="draw-path delay-2" cx="67" cy="66" r="14" />
-              <circle className="draw-path delay-2" cx="149" cy="60" r="14" />
-              <path className="draw-path delay-3" d="M56 82l-8 22m22-20l7 21m-13-20v44m-7 0c-4 12-11 20-19 25m26-25c7 10 14 18 23 24" />
-              <path className="draw-path delay-3" d="M140 76l-8 22m22-20l7 21m-13-20v50m-7 0c-5 13-12 23-21 30m28-30c8 12 16 21 27 28" />
-              <path className="draw-path delay-4" d="M88 95c12 9 24 9 37 0" />
-              <path className="draw-path delay-4" d="M92 92c8 8 14 13 18 17m16-17c-8 8-14 13-18 17" />
-              <path className="draw-path delay-5" d="M27 150c13-13 28-18 44-15m85-7c14 0 27 6 39 17" />
-              <path className="draw-path delay-5" d="M180 88c6-4 10-9 13-15m-6 23c9 1 16 4 21 10m-17 13c6 2 10 6 13 12" />
-              <path className="draw-path delay-6" d="M23 98c7-1 13 1 18 6m-8 16c-3 5-4 10-3 16m17-3c4 2 8 6 10 11" />
-              <path className="draw-path delay-6" d="M28 56c3-6 9-9 16-10m5 8c-1-6 1-11 6-16" />
-              <path className="draw-path delay-6" d="M166 39c3-5 7-8 12-10m13 15c2-5 5-8 10-9" />
-              <path className="draw-path delay-6" d="M186 150c6-1 11 1 15 5m-1 13c4 2 7 5 9 9" />
-            </g>
-          </svg>
-        </div>
-
-        <p className="font-script mt-4 text-[2rem] text-accent-rose">Our beginning</p>
-        <p className="mt-3 text-sm leading-7 text-text-secondary">
-          두 사람이 손을 맞잡은 첫 장면이
-          <br />
-          오늘의 초대장으로 이어집니다.
-        </p>
+      <div className="relative h-full w-full">
+        <Image
+          src="/final-intro.png"
+          alt="Wedding invitation intro"
+          fill
+          priority
+          sizes="100vw"
+          className="object-contain"
+        />
       </div>
     </div>
   );
@@ -117,16 +90,24 @@ export default function Home() {
   const [selectedMoment, setSelectedMoment] = useState<(typeof galleryMoments)[number] | null>(null);
 
   useEffect(() => {
-    const startFade = window.setTimeout(() => setIsLeavingIntro(true), 2200);
-    const removeIntro = window.setTimeout(() => setShowIntro(false), 2900);
+    document.body.style.overflow = "hidden";
+
+    const startFade = window.setTimeout(() => setIsLeavingIntro(true), 1400);
+    const removeIntro = window.setTimeout(() => setShowIntro(false), 2000);
 
     return () => {
       window.clearTimeout(startFade);
       window.clearTimeout(removeIntro);
+      document.body.style.overflow = "";
     };
   }, []);
 
   useEffect(() => {
+    if (showIntro) {
+      document.body.style.overflow = "hidden";
+      return;
+    }
+
     if (!selectedMoment) {
       document.body.style.overflow = "";
       return;
@@ -145,7 +126,7 @@ export default function Home() {
       document.body.style.overflow = "";
       window.removeEventListener("keydown", handleEscape);
     };
-  }, [selectedMoment]);
+  }, [selectedMoment, showIntro]);
 
 
   return (
@@ -159,12 +140,12 @@ export default function Home() {
           {/* 메인 — 콘텐츠 높이에 맞춤 (빈 min-height·flex-1로 섹션 간 공백이 벌어지지 않게) */}
           <section className="pt-2 pb-2 sm:pb-3 lg:pt-1 lg:pb-3">
             <div className="flex justify-center items-center">
-              <img
+              <Image
                 src="/새-03.png"
                 alt="장식용 새 일러스트"
-                className="w-20 h-auto mx-auto soft-float"
-                decoding="async"
-                loading="lazy"
+                width={204}
+                height={124}
+                className="h-auto w-20 mx-auto soft-float"
                 style={{ pointerEvents: "none", userSelect: "none" }}
               />
             </div>
@@ -289,7 +270,7 @@ export default function Home() {
             </div>
 
             <div className="mt-6 text-center">
-              <p className="font-display text-2xl">2026년 6월 20일 토요일 오후 2시</p>
+              <p className="font-display text-lg">2026년 6월 20일 토요일 오후 2시</p>
             </div>
           </section>
 
@@ -337,7 +318,7 @@ export default function Home() {
             <div className="mt-6 overflow-hidden">
               <div className="relative aspect-[6/5] overflow-hidden bg-white">
                 <Image
-                  src="/안내사항.jpg"
+                  src="/notice.jpg"
                   alt="안내사항 이미지"
                   fill
                   sizes="(max-width: 640px) 92vw, (max-width: 1024px) 80vw, 720px"
@@ -351,7 +332,7 @@ export default function Home() {
 
           <section id="upload" className="section-divider py-16 pb-8 text-center sm:py-20 sm:pb-10">
             <p className="font-script text-[1.7rem] text-text-secondary">For guests</p>
-            <h2 className="font-display mt-1 text-3xl">축하의 순간을 남겨주세요</h2>
+
             <p className="mx-auto mt-4 max-w-md text-sm leading-7 text-text-secondary">
               예식 당일 함께한 사진을 올려주시면,
               <br />

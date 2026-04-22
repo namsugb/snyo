@@ -179,6 +179,7 @@ function IntroOverlay({ isLeaving }: { isLeaving: boolean }) {
 export default function Home() {
   const [showIntro, setShowIntro] = useState(true);
   const [isLeavingIntro, setIsLeavingIntro] = useState(false);
+  const [isNavOpen, setIsNavOpen] = useState(false);
   const [selectedMoment, setSelectedMoment] = useState<(typeof galleryMoments)[number] | null>(null);
   const [copiedAccount, setCopiedAccount] = useState<string | null>(null);
 
@@ -233,36 +234,69 @@ export default function Home() {
     }
   };
 
-
   return (
     <>
       {showIntro ? <IntroOverlay isLeaving={isLeavingIntro} /> : null}
       <GalleryModal moment={selectedMoment} onClose={() => setSelectedMoment(null)} />
 
       <nav
-        className="fixed bottom-6 right-3 z-40 flex w-12 flex-col items-stretch rounded-full border border-border-soft/80 bg-white/92 py-3 shadow-[0_12px_28px_rgba(0,0,0,0.08)] backdrop-blur-sm"
+        className="fixed bottom-6 right-3 z-40"
         aria-label="Section navigation"
       >
-        <div className="flex w-full flex-col gap-2">
-          {sectionNavItems.map((item) => (
-            <a
-              key={item.href}
-              href={item.href}
-              className="group relative flex h-8 w-full shrink-0 items-center justify-center"
-              aria-label={`Go to ${item.label}`}
+        <div className="flex flex-col items-end gap-3">
+          {isNavOpen ? (
+            <div className="flex w-12 flex-col items-stretch rounded-full border border-border-soft/80 bg-white/92 py-3 shadow-[0_12px_28px_rgba(0,0,0,0.08)] backdrop-blur-sm">
+              <div className="flex w-full flex-col gap-2">
+                {sectionNavItems.map((item) => (
+                  <a
+                    key={item.href}
+                    href={item.href}
+                    className="group relative flex h-8 w-full shrink-0 items-center justify-center"
+                    aria-label={`Go to ${item.label}`}
+                    onClick={() => setIsNavOpen(false)}
+                  >
+                    <span className="pointer-events-none absolute right-full top-1/2 z-10 mr-2 -translate-y-1/2 whitespace-nowrap text-[10px] tracking-[0.18em] text-text-secondary opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                      {item.label}
+                    </span>
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-foreground/75 transition-colors duration-200 group-hover:text-foreground">
+                      <NavIcon icon={item.icon} />
+                    </span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
+          <button
+            type="button"
+            onClick={() => setIsNavOpen((current) => !current)}
+            aria-label={isNavOpen ? "Close navigation" : "Open navigation"}
+            className="flex h-12 w-12 items-center justify-center rounded-full border border-border-soft/80 bg-white/92 text-foreground shadow-[0_12px_28px_rgba(0,0,0,0.08)] backdrop-blur-sm transition-transform duration-200 hover:scale-[1.03]"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              className="h-5 w-5"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <span className="pointer-events-none absolute right-full top-1/2 z-10 mr-2 -translate-y-1/2 whitespace-nowrap text-[10px] tracking-[0.18em] text-text-secondary opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                {item.label}
-              </span>
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-foreground/75 transition-colors duration-200 group-hover:text-foreground">
-                <NavIcon icon={item.icon} />
-              </span>
-            </a>
-          ))}
+              {isNavOpen ? (
+                <path d="M7 7 17 17M17 7 7 17" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+              ) : (
+                <>
+                  <path d="M7 8.5h10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                  <path d="M7 12h10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                  <path d="M7 15.5h10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                </>
+              )}
+            </svg>
+          </button>
         </div>
       </nav>
 
-      <main id="top" className="relative min-h-screen overflow-hidden bg-white text-foreground">
+      <main
+        id="top"
+        className={`relative min-h-screen overflow-hidden bg-white text-foreground transition-opacity duration-300 ${showIntro ? "pointer-events-none opacity-0" : "opacity-100"}`}
+      >
         <div className="mx-auto min-h-screen w-full overflow-hidden rounded-none border-x border-border-soft/80 bg-white px-5 pb-18 pt-6 shadow-none sm:px-7 lg:max-w-4xl lg:rounded-[34px] lg:border lg:shadow-[0_24px_80px_rgba(120,88,76,0.12)]">
 
           {/* 메인 — 콘텐츠 높이에 맞춤 (빈 min-height·flex-1로 섹션 간 공백이 벌어지지 않게) */}
@@ -398,6 +432,18 @@ export default function Home() {
               })}
             </div>
 
+            <div className="mt-8 flex justify-center">
+              <Image
+                src="/calendar.png"
+                alt="Wedding calendar illustration"
+                width={320}
+                height={170}
+                className=" bg-white"
+                priority
+              />
+            </div>
+
+
             <div className="mt-6 text-center">
               <p className="font-display text-lg">2026년 6월 20일 토요일 오후 2시</p>
             </div>
@@ -426,7 +472,7 @@ export default function Home() {
                 href="https://map.kakao.com/link/search/%EC%95%84%EC%9D%B4%EB%B2%A1%EC%8A%A4%EC%BB%A8%EB%B2%A4%EC%85%98"
                 target="_blank"
                 rel="noreferrer"
-                className="rounded-full border border-accent-rose/30 px-4 py-3 text-center text-xs tracking-[0.2em] text-ink-accent uppercase transition-transform duration-200 hover:-translate-y-0.5"
+                className="rounded-full border px-4 py-3 text-center text-xs tracking-[0.2em] text-ink-accent uppercase transition-transform duration-200 hover:-translate-y-0.5"
               >
                 Kakao Map
               </a>

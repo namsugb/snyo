@@ -153,8 +153,8 @@ export default function Home() {
       {showIntro ? <IntroOverlay isLeaving={isLeavingIntro} /> : null}
       <GalleryModal moment={selectedMoment} onClose={() => setSelectedMoment(null)} />
 
-      <main className="relative overflow-hidden  text-foreground">
-        <div className="film-grain paper-texture mx-auto min-h-screen w-full overflow-hidden rounded-none border-x border-border-soft/80 px-5 pb-18 pt-6 shadow-none sm:px-7 lg:max-w-4xl lg:rounded-[34px] lg:border lg:shadow-[0_24px_80px_rgba(120,88,76,0.12)]">
+      <main className="relative min-h-screen overflow-hidden bg-white text-foreground">
+        <div className="mx-auto min-h-screen w-full overflow-hidden rounded-none border-x border-border-soft/80 bg-white px-5 pb-18 pt-6 shadow-none sm:px-7 lg:max-w-4xl lg:rounded-[34px] lg:border lg:shadow-[0_24px_80px_rgba(120,88,76,0.12)]">
 
           {/* 메인 — 콘텐츠 높이에 맞춤 (빈 min-height·flex-1로 섹션 간 공백이 벌어지지 않게) */}
           <section className="pt-2 pb-2 sm:pb-3 lg:pt-1 lg:pb-3">
@@ -288,7 +288,7 @@ export default function Home() {
             <p className="font-script text-[1.65rem] text-text-secondary">Place</p>
 
             <div className="mt-6 overflow-hidden">
-              <div className="relative aspect-[5/8] overflow-hidden bg-[#f7f1eb] sm:aspect-[5/7]">
+              <div className="relative aspect-[5/8] overflow-hidden bg-white sm:aspect-[5/7]">
                 <Image
                   src="/info.jpg"
                   alt="아이벡스컨벤션 안내 이미지"
@@ -318,6 +318,22 @@ export default function Home() {
               >
                 Naver Map
               </a>
+            </div>
+          </section>
+
+          <section className="section-divider py-16 sm:py-20">
+            <p className="font-script text-[1.65rem] text-text-secondary">Notice</p>
+
+            <div className="mt-6 overflow-hidden">
+              <div className="relative aspect-[6/5] overflow-hidden bg-white">
+                <Image
+                  src="/안내사항.jpg"
+                  alt="안내사항 이미지"
+                  fill
+                  sizes="(max-width: 640px) 92vw, (max-width: 1024px) 80vw, 720px"
+                  className="object-contain"
+                />
+              </div>
             </div>
           </section>
 

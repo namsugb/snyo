@@ -18,6 +18,98 @@ const galleryMoments = [
   { title: "Night vow", src: "/KakaoTalk_20260301_000807942_11.jpg", rotate: "rotate-[1deg]" },
 ];
 
+const accountGroups = [
+  {
+    title: "신랑측 계좌번호",
+    entries: [
+      { name: "윤준영", bank: "국민은행", account: "756002 00 010858" },
+      { name: "윤우영", bank: "국민은행", account: "827 21 0642 281" },
+      { name: "이민자", bank: "우리은행", account: "129 07 020930" },
+    ],
+  },
+  {
+    title: "신부측 계좌번호",
+    entries: [
+      { name: "남승효", bank: "농협은행", account: "351 0573 5575 43" },
+      { name: "남유행", bank: "농협은행", account: "351 0573 5575 43" },
+      { name: "김은실", bank: "농협은행", account: "351 0573 5575 43" },
+
+    ],
+  },
+];
+
+const sectionNavItems = [
+  { href: "#top", label: "Top", icon: "home" },
+  { href: "#gallery", label: "Gallery", icon: "gallery" },
+  { href: "#day", label: "Day", icon: "calendar" },
+  { href: "#place", label: "Place", icon: "pin" },
+  { href: "#notice", label: "Notice", icon: "note" },
+  { href: "#account", label: "Account", icon: "heart" },
+  { href: "#upload", label: "Guest", icon: "message" },
+];
+
+function NavIcon({ icon }: { icon: (typeof sectionNavItems)[number]["icon"] }) {
+  const commonProps = {
+    viewBox: "0 0 24 24",
+    className: "h-[18px] w-[18px]",
+    fill: "none",
+    xmlns: "http://www.w3.org/2000/svg",
+  };
+
+  switch (icon) {
+    case "home":
+      return (
+        <svg {...commonProps}>
+          <path d="M4 11.5 12 5l8 6.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M6.5 10.5V19h11v-8.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      );
+    case "gallery":
+      return (
+        <svg {...commonProps}>
+          <rect x="4" y="5" width="16" height="14" rx="2.5" stroke="currentColor" strokeWidth="1.7" />
+          <circle cx="9" cy="10" r="1.4" fill="currentColor" />
+          <path d="m7 16 3.2-3 2.6 2.3 2.2-1.9L17 16" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      );
+    case "calendar":
+      return (
+        <svg {...commonProps}>
+          <rect x="4" y="6" width="16" height="14" rx="2.5" stroke="currentColor" strokeWidth="1.7" />
+          <path d="M8 4v4M16 4v4M4 10.5h16" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+        </svg>
+      );
+    case "pin":
+      return (
+        <svg {...commonProps}>
+          <path d="M12 20c3.3-3.5 5-6.2 5-8.5a5 5 0 1 0-10 0c0 2.3 1.7 5 5 8.5Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+          <circle cx="12" cy="11.5" r="1.8" fill="currentColor" />
+        </svg>
+      );
+    case "note":
+      return (
+        <svg {...commonProps}>
+          <rect x="5" y="4.5" width="14" height="15" rx="2.5" stroke="currentColor" strokeWidth="1.7" />
+          <path d="M8.5 9h7M8.5 12.5h7M8.5 16h4.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+        </svg>
+      );
+    case "heart":
+      return (
+        <svg {...commonProps}>
+          <path d="M12 19.5c-4.8-3.2-7-5.9-7-8.8A3.8 3.8 0 0 1 8.8 7c1.3 0 2.4.6 3.2 1.6A4.1 4.1 0 0 1 15.2 7 3.8 3.8 0 0 1 19 10.7c0 2.9-2.2 5.6-7 8.8Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+        </svg>
+      );
+    case "message":
+      return (
+        <svg {...commonProps}>
+          <path d="M6.5 7h11a2.5 2.5 0 0 1 2.5 2.5v5A2.5 2.5 0 0 1 17.5 17H11l-4.5 3v-3H6.5A2.5 2.5 0 0 1 4 14.5v-5A2.5 2.5 0 0 1 6.5 7Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+        </svg>
+      );
+    default:
+      return null;
+  }
+}
+
 function GalleryModal({
   moment,
   onClose,
@@ -88,6 +180,7 @@ export default function Home() {
   const [showIntro, setShowIntro] = useState(true);
   const [isLeavingIntro, setIsLeavingIntro] = useState(false);
   const [selectedMoment, setSelectedMoment] = useState<(typeof galleryMoments)[number] | null>(null);
+  const [copiedAccount, setCopiedAccount] = useState<string | null>(null);
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -128,13 +221,48 @@ export default function Home() {
     };
   }, [selectedMoment, showIntro]);
 
+  const handleCopyAccount = async (account: string) => {
+    try {
+      await navigator.clipboard.writeText(account);
+      setCopiedAccount(account);
+      window.setTimeout(() => {
+        setCopiedAccount((current) => (current === account ? null : current));
+      }, 1600);
+    } catch {
+      setCopiedAccount(null);
+    }
+  };
+
 
   return (
     <>
       {showIntro ? <IntroOverlay isLeaving={isLeavingIntro} /> : null}
       <GalleryModal moment={selectedMoment} onClose={() => setSelectedMoment(null)} />
 
-      <main className="relative min-h-screen overflow-hidden bg-white text-foreground">
+      <nav
+        className="fixed bottom-6 right-3 z-40 flex w-12 flex-col items-stretch rounded-full border border-border-soft/80 bg-white/92 py-3 shadow-[0_12px_28px_rgba(0,0,0,0.08)] backdrop-blur-sm"
+        aria-label="Section navigation"
+      >
+        <div className="flex w-full flex-col gap-2">
+          {sectionNavItems.map((item) => (
+            <a
+              key={item.href}
+              href={item.href}
+              className="group relative flex h-8 w-full shrink-0 items-center justify-center"
+              aria-label={`Go to ${item.label}`}
+            >
+              <span className="pointer-events-none absolute right-full top-1/2 z-10 mr-2 -translate-y-1/2 whitespace-nowrap text-[10px] tracking-[0.18em] text-text-secondary opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                {item.label}
+              </span>
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-foreground/75 transition-colors duration-200 group-hover:text-foreground">
+                <NavIcon icon={item.icon} />
+              </span>
+            </a>
+          ))}
+        </div>
+      </nav>
+
+      <main id="top" className="relative min-h-screen overflow-hidden bg-white text-foreground">
         <div className="mx-auto min-h-screen w-full overflow-hidden rounded-none border-x border-border-soft/80 bg-white px-5 pb-18 pt-6 shadow-none sm:px-7 lg:max-w-4xl lg:rounded-[34px] lg:border lg:shadow-[0_24px_80px_rgba(120,88,76,0.12)]">
 
           {/* 메인 — 콘텐츠 높이에 맞춤 (빈 min-height·flex-1로 섹션 간 공백이 벌어지지 않게) */}
@@ -182,7 +310,7 @@ export default function Home() {
           </section>
 
           {/* 갤러리 */}
-          <section className="section-divider py-8 sm:py-20">
+          <section id="gallery" className="section-divider py-8 sm:py-20">
 
             {/* 1*2 */}
             <div className="w-screen relative left-1/2 right-1/2 mb-8 -translate-x-1/2">
@@ -229,7 +357,7 @@ export default function Home() {
 
 
           {/* 날짜 */}
-          <section className="section-divider py-16 sm:py-20">
+          <section id="day" className="section-divider py-16 sm:py-20">
             <div className="mb-5 flex items-end justify-between">
               <div>
                 <p className="font-script text-[1.65rem] text-text-secondary">The day</p>
@@ -259,7 +387,8 @@ export default function Home() {
                   <div
                     key={day}
                     className={`flex aspect-square items-center justify-center rounded-full text-sm ${isWeddingDay
-                      ? "bg-accent-rose text-white shadow-[0_8px_24px_rgba(216,140,154,0.35)]"
+                      ? "bg-black text-white"
+
                       : "text-foreground/88"
                       }`}
                   >
@@ -275,7 +404,7 @@ export default function Home() {
           </section>
 
           {/* 위치 및 지도 */}
-          <section className="section-divider py-16 sm:py-20">
+          <section id="place" className="section-divider py-16 sm:py-20">
             <p className="font-script text-[1.65rem] text-text-secondary">Place</p>
 
             <div className="mt-6 overflow-hidden">
@@ -312,7 +441,7 @@ export default function Home() {
             </div>
           </section>
 
-          <section className="section-divider py-16 sm:py-20">
+          <section id="notice" className="section-divider py-16 sm:py-20">
             <p className="font-script text-[1.65rem] text-text-secondary">Notice</p>
 
             <div className="mt-6 overflow-hidden">
@@ -328,18 +457,106 @@ export default function Home() {
             </div>
           </section>
 
+          <section id="account" className="section-divider py-16 sm:py-20">
+            <p className=" text-[1.65rem] text-text-secondary">마음전할곳</p>
+
+            <div className="mt-6 space-y-10">
+              {accountGroups.map((group) => (
+                <div key={group.title}>
+                  <div className="border-b border-foreground/80 pb-3">
+                    <p className="text-lg font-semibold tracking-[-0.01em] text-foreground">{group.title}</p>
+                  </div>
+
+                  <div className="space-y-8 pt-6">
+                    {group.entries.map((info) => (
+                      <article key={`${group.title}-${info.name}-${info.account}`}>
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="pr-3">
+                            <p className="mt-1 text-base text-foreground">{info.name}</p>
+                            <p className="text-base leading-8 text-foreground">
+                              {info.bank} {info.account}
+                            </p>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => void handleCopyAccount(info.account)}
+                            className="mt-1 shrink-0 rounded-full bg-black/80 px-3 py-2 text-sm font-medium text-white transition-opacity duration-200 hover:opacity-90"
+                          >
+                            {copiedAccount === info.account ? "복사됨" : "복사하기"}
+                          </button>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
 
 
           <section id="upload" className="section-divider py-16 pb-8 text-center sm:py-20 sm:pb-10">
             <p className="font-script text-[1.7rem] text-text-secondary">For guests</p>
 
             <p className="mx-auto mt-4 max-w-md text-sm leading-7 text-text-secondary">
-              예식 당일 함께한 사진을 올려주시면,
+              참석 여부와 함께 마음을 남겨주시고,
               <br />
-              저희에게 오래도록 반짝이는 선물이 됩니다.
+              예식 당일 사진도 편하게 공유해주세요.
             </p>
 
-            <div className="mt-7 rounded-[28px] border-2 border-dashed border-accent-sage/35 px-5 py-7">
+            <div className="mt-7 rounded-[28px] border border-border-soft/80 px-5 py-7 text-left">
+              <p className="font-display text-2xl text-center">참석의사전달</p>
+              <p className="mt-2 text-center text-sm leading-6 text-text-secondary">
+                참석 여부를 남길 수 있는 자리입니다.
+                <br />
+                신청 기능은 이후 연동 예정입니다.
+              </p>
+
+              <div className="mt-6 space-y-4">
+                <div>
+                  <label className="mb-2 block text-sm text-text-secondary">성함</label>
+                  <div className="rounded-2xl border border-border-soft/80 px-4 py-3 text-sm text-text-secondary">
+                    이름을 입력해주세요
+                  </div>
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm text-text-secondary">참석 여부</label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="rounded-2xl border border-border-soft/80 px-4 py-3 text-center text-sm text-text-secondary">
+                      참석
+                    </div>
+                    <div className="rounded-2xl border border-border-soft/80 px-4 py-3 text-center text-sm text-text-secondary">
+                      불참
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm text-text-secondary">동행 인원</label>
+                  <div className="rounded-2xl border border-border-soft/80 px-4 py-3 text-sm text-text-secondary">
+                    동행 인원을 선택해주세요
+                  </div>
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm text-text-secondary">전달 말씀</label>
+                  <div className="min-h-28 rounded-2xl border border-border-soft/80 px-4 py-3 text-sm text-text-secondary">
+                    축하 메시지를 남겨주세요
+                  </div>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                className="mt-5 w-full rounded-full border border-accent-rose/35 px-6 py-3 text-sm tracking-[0.18em] text-ink-accent transition-transform duration-200 hover:-translate-y-0.5"
+              >
+                RSVP soon
+              </button>
+            </div>
+
+            <div className="mt-5 rounded-[28px] border-2 border-dashed border-accent-sage/35 px-5 py-7">
               <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border border-accent-sage/30 text-2xl text-ink-accent">
                 +
               </div>

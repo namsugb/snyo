@@ -176,6 +176,32 @@ function IntroOverlay({ isLeaving }: { isLeaving: boolean }) {
   );
 }
 
+function SectionOrnament({
+  src,
+  alt,
+  width,
+  height,
+  className = "",
+}: {
+  src: string;
+  alt: string;
+  width: number;
+  height: number;
+  className?: string;
+}) {
+  return (
+    <div className="flex justify-center -mb-6 z-10  ">
+      <Image
+        src={src}
+        alt={alt}
+        width={width}
+        height={height}
+        className={className}
+      />
+    </div>
+  );
+}
+
 export default function Home() {
   const [showIntro, setShowIntro] = useState(true);
   const [isLeavingIntro, setIsLeavingIntro] = useState(false);
@@ -328,8 +354,15 @@ export default function Home() {
           </section>
 
           {/* 초대말 */}
-          <section className="section-divider my-10 text-center pt-4 pb-12 sm:pt-6 sm:pb-6">
+          <section className="my-10 text-center pt-4 pb-12 sm:pt-6 sm:pb-6">
             <div className="flex flex-col items-center justify-center">
+              <SectionOrnament
+                src="/flower.png"
+                alt="Flower ornament"
+                width={120}
+                height={74}
+                className="h-auto w-24 opacity-90 sm:w-28"
+              />
               <div className="relative mx-auto w-full max-w-xs aspect-[3/4] overflow-hidden">
                 <Image
                   src="/invitation.jpg"
@@ -343,8 +376,10 @@ export default function Home() {
             </div>
           </section>
 
+
+
           {/* 갤러리 */}
-          <section id="gallery" className="section-divider py-8 sm:py-20">
+          <section id="gallery" className="py-8 sm:py-20">
 
             {/* 1*2 */}
             <div className="w-screen relative left-1/2 right-1/2 mb-8 -translate-x-1/2">
@@ -391,7 +426,7 @@ export default function Home() {
 
 
           {/* 날짜 */}
-          <section id="day" className="section-divider py-16 sm:py-20">
+          <section id="day" className="py-16 sm:py-20">
             <div className="mb-5 flex items-end justify-between">
               <div>
                 <p className="font-script text-[1.65rem] text-text-secondary">The day</p>
@@ -449,8 +484,10 @@ export default function Home() {
             </div>
           </section>
 
+
+
           {/* 위치 및 지도 */}
-          <section id="place" className="section-divider py-16 sm:py-20">
+          <section id="place" className="py-16 sm:py-20">
             <p className="font-script text-[1.65rem] text-text-secondary">Place</p>
 
             <div className="mt-6 overflow-hidden">
@@ -487,7 +524,9 @@ export default function Home() {
             </div>
           </section>
 
-          <section id="notice" className="section-divider py-16 sm:py-20">
+
+
+          <section id="notice" className="py-16 sm:py-20">
             <p className="font-script text-[1.65rem] text-text-secondary">Notice</p>
 
             <div className="mt-6 overflow-hidden">
@@ -503,7 +542,8 @@ export default function Home() {
             </div>
           </section>
 
-          <section id="account" className="section-divider py-16 sm:py-20">
+
+          <section id="account" className="py-16 sm:py-20">
             <p className=" text-[1.65rem] text-text-secondary">마음전할곳</p>
 
             <div className="mt-6 space-y-10">
@@ -542,7 +582,7 @@ export default function Home() {
 
 
 
-          <section id="upload" className="section-divider py-16 pb-8 text-center sm:py-20 sm:pb-10">
+          <section id="upload" className="py-16 pb-8 text-center sm:py-20 sm:pb-10">
             <p className="font-script text-[1.7rem] text-text-secondary">For guests</p>
 
             <p className="mx-auto mt-4 max-w-md text-sm leading-7 text-text-secondary">

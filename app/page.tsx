@@ -158,11 +158,21 @@ export default function Home() {
 
           {/* 메인 — 콘텐츠 높이에 맞춤 (빈 min-height·flex-1로 섹션 간 공백이 벌어지지 않게) */}
           <section className="pt-2 pb-2 sm:pb-3 lg:pt-1 lg:pb-3">
+            <div className="flex justify-center items-center">
+              <img
+                src="/새-03.png"
+                alt="장식용 새 일러스트"
+                className="w-20 h-auto mx-auto soft-float"
+                decoding="async"
+                loading="lazy"
+                style={{ pointerEvents: "none", userSelect: "none" }}
+              />
+            </div>
             <div className="mx-auto flex w-full items-start justify-center">
               <div className="relative w-full lg:mx-auto lg:max-w-lg">
                 <div className="relative aspect-[4/5] overflow-hidden rounded-b-[12px] rounded-tl-[50%_42%] rounded-tr-[50%_42%]">
                   <Image
-                    src="/main.png"
+                    src="/KakaoTalk_20260301_000807942_09.jpg"
                     alt="남승효 윤준영 웨딩 사진"
                     fill
                     priority
@@ -175,8 +185,8 @@ export default function Home() {
           </section>
 
           {/* 초대말 */}
-          <section className="section-divider my-20 text-center pt-4 pb-12 sm:pt-6 sm:pb-20">
-            <div className="flex flex-col items-center justify-center gap-6 sm:gap-8">
+          <section className="section-divider my-10 text-center pt-4 pb-12 sm:pt-6 sm:pb-6">
+            <div className="flex flex-col items-center justify-center">
               <div className="relative mx-auto w-full max-w-xs aspect-[3/4] overflow-hidden">
                 <Image
                   src="/invitation.jpg"
@@ -184,7 +194,7 @@ export default function Home() {
                   priority
                   fill
                   className="object-cover w-full h-full"
-                  sizes="(max-width: 640px) 90vw, (max-width: 1024px) 280px, 320px"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 320px"
                 />
               </div>
             </div>

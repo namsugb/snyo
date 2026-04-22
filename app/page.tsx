@@ -4,16 +4,65 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 
 const galleryMoments = [
-  { title: "First hello", src: "/KakaoTalk_20260301_000807942.jpg", rotate: "-rotate-3" },
-  { title: "Our season", src: "/KakaoTalk_20260301_000807942_01.jpg", rotate: "rotate-2" },
-  { title: "Promise", src: "/KakaoTalk_20260301_000807942_02.jpg", rotate: "-rotate-2" },
-  { title: "Bloom", src: "/KakaoTalk_20260301_000807942_03.jpg", rotate: "rotate-3" },
-  { title: "Letters", src: "/KakaoTalk_20260301_000807942_04.jpg", rotate: "-rotate-1" },
-  { title: "Picnic", src: "/KakaoTalk_20260301_000807942_05.jpg", rotate: "rotate-1" },
-  { title: "Evening", src: "/KakaoTalk_20260301_000807942_06.jpg", rotate: "-rotate-3" },
-  { title: "Smile", src: "/KakaoTalk_20260301_000807942_07.jpg", rotate: "rotate-2" },
-  { title: "Forever", src: "/KakaoTalk_20260301_000807942_08.jpg", rotate: "-rotate-2" },
+  { title: "First hello", src: "/KakaoTalk_20260301_000807942.jpg", rotate: "-rotate-[1.8deg]" },
+  { title: "Our season", src: "/KakaoTalk_20260301_000807942_01.jpg", rotate: "rotate-[1.6deg]" },
+  { title: "Promise", src: "/KakaoTalk_20260301_000807942_02.jpg", rotate: "-rotate-[1.4deg]" },
+  { title: "Bloom", src: "/KakaoTalk_20260301_000807942_03.jpg", rotate: "rotate-[2deg]" },
+  { title: "Letters", src: "/KakaoTalk_20260301_000807942_04.jpg", rotate: "-rotate-[1deg]" },
+  { title: "Picnic", src: "/KakaoTalk_20260301_000807942_05.jpg", rotate: "rotate-[0.8deg]" },
+  { title: "Evening", src: "/KakaoTalk_20260301_000807942_06.jpg", rotate: "-rotate-[1.8deg]" },
+  { title: "Smile", src: "/KakaoTalk_20260301_000807942_07.jpg", rotate: "rotate-[1.3deg]" },
+  { title: "Forever", src: "/KakaoTalk_20260301_000807942_08.jpg", rotate: "-rotate-[1.5deg]" },
+  { title: "Soft breeze", src: "/KakaoTalk_20260301_000807942_09.jpg", rotate: "rotate-[1.2deg]" },
+  { title: "Daylight", src: "/KakaoTalk_20260301_000807942_10.jpg", rotate: "-rotate-[1.2deg]" },
+  { title: "Night vow", src: "/KakaoTalk_20260301_000807942_11.jpg", rotate: "rotate-[1deg]" },
 ];
+
+function GalleryModal({
+  moment,
+  onClose,
+}: {
+  moment: (typeof galleryMoments)[number] | null;
+  onClose: () => void;
+}) {
+  if (!moment) {
+    return null;
+  }
+
+  return (
+    <div
+      className="gallery-modal fixed inset-0 z-50 flex items-center justify-center"
+      role="dialog"
+      aria-modal="true"
+      aria-label={`${moment.title} image preview`}
+      onClick={onClose}
+    >
+      <button
+        type="button"
+        aria-label="Close image preview"
+        className="absolute right-5 top-5 flex h-10 w-10 items-center justify-center rounded-full border border-white/45 bg-white/12 text-xl text-white transition-colors duration-200 hover:bg-white/20"
+        onClick={onClose}
+      >
+        ×
+      </button>
+
+      <div
+        className="relative w-full max-w-5xl overflow-hidden"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className="relative aspect-[4/5] max-h-screen overflow-hidden sm:aspect-[5/4]">
+          <Image
+            src={moment.src}
+            alt={moment.title}
+            fill
+            sizes="100vw"
+            className="object-contain"
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function IntroOverlay({ isLeaving }: { isLeaving: boolean }) {
   return (
@@ -65,6 +114,7 @@ function IntroOverlay({ isLeaving }: { isLeaving: boolean }) {
 export default function Home() {
   const [showIntro, setShowIntro] = useState(true);
   const [isLeavingIntro, setIsLeavingIntro] = useState(false);
+  const [selectedMoment, setSelectedMoment] = useState<(typeof galleryMoments)[number] | null>(null);
 
   useEffect(() => {
     const startFade = window.setTimeout(() => setIsLeavingIntro(true), 2200);
@@ -76,21 +126,43 @@ export default function Home() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!selectedMoment) {
+      document.body.style.overflow = "";
+      return;
+    }
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setSelectedMoment(null);
+      }
+    };
+
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", handleEscape);
+    };
+  }, [selectedMoment]);
+
 
   return (
     <>
       {showIntro ? <IntroOverlay isLeaving={isLeavingIntro} /> : null}
+      <GalleryModal moment={selectedMoment} onClose={() => setSelectedMoment(null)} />
 
       <main className="relative overflow-hidden  text-foreground">
         <div className="film-grain paper-texture mx-auto min-h-screen w-full overflow-hidden rounded-none border-x border-border-soft/80 px-5 pb-18 pt-6 shadow-none sm:px-7 lg:max-w-4xl lg:rounded-[34px] lg:border lg:shadow-[0_24px_80px_rgba(120,88,76,0.12)]">
 
-          {/* 메인 — 모바일: 한 화면 히어로 / lg+: 콘텐츠 높이에 맞춰 자연스럽게 이어짐 */}
-          <section className="flex min-h-svh flex-col justify-between gap-0 pb-10 lg:min-h-0 lg:justify-start lg:gap-8 lg:pb-14 lg:pt-2">
-            <div className="mx-auto flex w-full flex-1 items-start justify-center pt-2 lg:flex-none lg:pt-0">
+          {/* 메인 — 콘텐츠 높이에 맞춤 (빈 min-height·flex-1로 섹션 간 공백이 벌어지지 않게) */}
+          <section className="pt-2 pb-2 sm:pb-3 lg:pt-1 lg:pb-3">
+            <div className="mx-auto flex w-full items-start justify-center">
               <div className="relative w-full lg:mx-auto lg:max-w-lg">
                 <div className="relative aspect-[4/5] overflow-hidden rounded-b-[12px] rounded-tl-[50%_42%] rounded-tr-[50%_42%]">
                   <Image
-                    src="/KakaoTalk_20260301_000807942_09.jpg"
+                    src="/main.png"
                     alt="남승효 윤준영 웨딩 사진"
                     fill
                     priority
@@ -100,41 +172,76 @@ export default function Home() {
                 </div>
               </div>
             </div>
-
-            <div className="relative mt-4 px-4 py-5 text-center lg:mt-0 lg:px-6 lg:py-6">
-              <p className="font-script text-[1.8rem] text-ink-accent">Save our date</p>
-              <p className="font-display mt-4 text-3xl tracking-[0.22em]">6.20</p>
-              <p className="mt-1 text-sm tracking-[0.28em] text-text-secondary uppercase">
-                Saturday at 2:00 PM
-              </p>
-              <p className="mt-4 text-sm leading-6 text-text-secondary">
-                꽃처럼 환한 계절,
-                <br />
-                소중한 마음을 모아 저희의 시작을 함께해주세요.
-              </p>
-            </div>
           </section>
 
           {/* 초대말 */}
-          <section className="section-divider py-16 text-center sm:py-20">
-            <p className="font-script text-[1.7rem] text-accent-rose">Invitation</p>
-            <p className="mx-auto mt-5 max-w-md text-[15px] leading-8 text-text-secondary">
-              저희 두 사람, 사랑과 믿음으로 한 가정을 이루려 합니다.
-              <br />
-              오셔서 축복해 주시면 더없는 기쁨으로 간직하겠습니다.
-            </p>
-            <p className="mx-auto mt-6 max-w-sm text-sm leading-7 text-ink-accent">
-              서로의 이름을 불러주던 다정한 순간들이
-              <br />
-              이제는 평생의 약속으로 이어집니다.
-            </p>
+          <section className="section-divider my-20 text-center pt-4 pb-12 sm:pt-6 sm:pb-20">
+            <div className="flex flex-col items-center justify-center gap-6 sm:gap-8">
+              <div className="relative mx-auto w-full max-w-xs aspect-[3/4] overflow-hidden">
+                <Image
+                  src="/invitation.jpg"
+                  alt="웨딩 초대장 느낌의 원본 스캔 이미지"
+                  priority
+                  fill
+                  className="object-cover w-full h-full"
+                  sizes="(max-width: 640px) 90vw, (max-width: 1024px) 280px, 320px"
+                />
+              </div>
+            </div>
           </section>
+
+          {/* 갤러리 */}
+          <section className="section-divider py-8 sm:py-20">
+
+            {/* 1*2 */}
+            <div className="w-screen relative left-1/2 right-1/2 mb-8 -translate-x-1/2">
+              <div className="relative aspect-[8/12] w-full overflow-hidden">
+                <Image
+                  src="/KakaoTalk_20260301_000807942_09.jpg"
+                  alt="웨딩 갤러리 대형 이미지"
+                  fill
+                  priority={false}
+                  sizes="100vw"
+                  className="object-cover"
+                />
+              </div>
+            </div>
+
+
+
+
+            {/* 3*4 */}
+            <div className="mx-[-20px] mt-7 overflow-hidden sm:mx-[-28px]">
+              <div className="grid grid-cols-3 gap-0">
+                {galleryMoments.map((moment) => (
+                  <button
+                    key={moment.title}
+                    type="button"
+                    onClick={() => setSelectedMoment(moment)}
+                    className="gallery-polaroid group block w-full text-left"
+                    aria-label={`${moment.title} image preview`}
+                  >
+                    <div className="relative aspect-square overflow-hidden">
+                      <Image
+                        src={moment.src}
+                        alt={moment.title}
+                        fill
+                        sizes="(max-width: 640px) 33vw, (max-width: 1024px) 220px, 240px"
+                        className="object-cover transition duration-300"
+                      />
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </section>
+
 
           {/* 날짜 */}
           <section className="section-divider py-16 sm:py-20">
             <div className="mb-5 flex items-end justify-between">
               <div>
-                <p className="font-script text-[1.65rem] text-accent-rose">The day</p>
+                <p className="font-script text-[1.65rem] text-text-secondary">The day</p>
               </div>
               <p className="text-right text-xs leading-5 tracking-[0.18em] text-text-secondary uppercase">
                 June
@@ -173,72 +280,51 @@ export default function Home() {
 
             <div className="mt-6 text-center">
               <p className="font-display text-2xl">2026년 6월 20일 토요일 오후 2시</p>
-              <p className="mt-2 text-sm leading-6 text-text-secondary">
-                가장 소중한 분들 앞에서 저희의 첫 인사를 드립니다.
-              </p>
             </div>
           </section>
 
+          {/* 위치 및 지도 */}
           <section className="section-divider py-16 sm:py-20">
-            <p className="font-script text-[1.65rem] text-accent-rose">Place</p>
+            <p className="font-script text-[1.65rem] text-text-secondary">Place</p>
 
-            <div className="mt-6 overflow-hidden rounded-[24px]">
-              <div className="flex min-h-44 items-end p-5 bg-[radial-gradient(circle_at_top,rgba(216,140,154,0.22),transparent_45%),linear-gradient(160deg,rgba(255,255,255,0.18),rgba(168,185,163,0.16))]">
-                <div>
-                  <p className="font-display text-2xl">라움 아트홀</p>
-                  <p className="mt-1 text-sm text-text-secondary">서울 강남구 선릉로 000</p>
-                </div>
+            <div className="mt-6 overflow-hidden">
+              <div className="relative aspect-[5/8] overflow-hidden bg-[#f7f1eb] sm:aspect-[5/7]">
+                <Image
+                  src="/info.jpg"
+                  alt="아이벡스컨벤션 안내 이미지"
+                  fill
+                  sizes="(max-width: 640px) 92vw, (max-width: 1024px) 80vw, 720px"
+                  className="object-cover"
+                />
               </div>
             </div>
 
-            <div className="mt-5 space-y-3 text-sm leading-7 text-text-secondary">
-              <p>
-                지하철 이용 시 2호선 선릉역에서 도보 8분,
-                <br />
-                자가용 이용 시 예식장 주차장을 이용하실 수 있습니다.
-              </p>
-              <div className="flex gap-3">
-                <a
-                  href="#"
-                  className="flex-1 rounded-full border border-accent-rose/30 px-4 py-3 text-center text-xs tracking-[0.2em] text-ink-accent uppercase transition-transform duration-200 hover:-translate-y-0.5"
-                >
-                  Map
-                </a>
-                <a
-                  href="#upload"
-                  className="flex-1 rounded-full border border-accent-sage/40 px-4 py-3 text-center text-xs tracking-[0.2em] text-ink-accent uppercase transition-transform duration-200 hover:-translate-y-0.5"
-                >
-                  RSVP
-                </a>
-              </div>
+
+
+            <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
+              <a
+                href="https://map.kakao.com/link/search/%EC%95%84%EC%9D%B4%EB%B2%A1%EC%8A%A4%EC%BB%A8%EB%B2%A4%EC%85%98"
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-full border border-accent-rose/30 px-4 py-3 text-center text-xs tracking-[0.2em] text-ink-accent uppercase transition-transform duration-200 hover:-translate-y-0.5"
+              >
+                Kakao Map
+              </a>
+              <a
+                href="https://map.naver.com/p/search/%EC%95%84%EC%9D%B4%EB%B2%A1%EC%8A%A4%EC%BB%A8%EB%B2%A4%EC%85%98"
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-full border border-accent-sage/40 px-4 py-3 text-center text-xs tracking-[0.2em] text-ink-accent uppercase transition-transform duration-200 hover:-translate-y-0.5"
+              >
+                Naver Map
+              </a>
             </div>
           </section>
 
-          <section className="section-divider py-16 sm:py-20">
-            <p className="font-script text-[1.7rem] text-accent-rose">Memories</p>
 
-            <div className="mt-6 grid grid-cols-3 gap-3">
-              {galleryMoments.map((moment) => (
-                <article
-                  key={moment.title}
-                  className={`border border-[#eadfd7] bg-white p-2 shadow-[0_12px_24px_rgba(120,88,76,0.14)] ${moment.rotate}`}
-                >
-                  <div className="relative aspect-[3/4] overflow-hidden bg-[#f5eee8]">
-                    <Image
-                      src={moment.src}
-                      alt={moment.title}
-                      fill
-                      sizes="(max-width: 640px) 28vw, 180px"
-                      className="object-cover"
-                    />
-                  </div>
-                </article>
-              ))}
-            </div>
-          </section>
 
           <section id="upload" className="section-divider py-16 pb-8 text-center sm:py-20 sm:pb-10">
-            <p className="font-script text-[1.7rem] text-accent-rose">For guests</p>
+            <p className="font-script text-[1.7rem] text-text-secondary">For guests</p>
             <h2 className="font-display mt-1 text-3xl">축하의 순간을 남겨주세요</h2>
             <p className="mx-auto mt-4 max-w-md text-sm leading-7 text-text-secondary">
               예식 당일 함께한 사진을 올려주시면,
@@ -263,7 +349,7 @@ export default function Home() {
                 Upload soon
               </button>
             </div>
-            ``          </section>
+          </section>
         </div>
       </main>
     </>

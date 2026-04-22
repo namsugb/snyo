@@ -219,3 +219,30 @@ button {
 .fade-up-delay {
   animation: fade-up 0.8s ease-out 0.16s both;
 }
+
+.gallery-polaroid {
+  cursor: pointer;
+  transition: transform 220ms ease, opacity 220ms ease;
+}
+
+@media (hover: hover) {
+  .gallery-polaroid:hover {
+    opacity: 0.94;
+  }
+}
+
+.gallery-modal {
+  animation: modal-fade-in 220ms ease-out both;
+}
+
+@keyframes modal-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -3,8 +3,16 @@ import "pretendard/dist/web/static/pretendard-dynamic-subset.css";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "윤준영 ♡ 남승효",
-  description: "따뜻하고 손편지 같은 무드의 모바일 웨딩 초대장",
+  title: "준영❤️승효 결혼합니다!",
+  description: "6월 20일 토요일 1시 40분",
+  openGraph: {
+    title: "준영❤️승효 결혼합니다!",
+    description: "6월 20일 토요일 1시 40분",
+  },
+  twitter: {
+    title: "준영❤️승효 결혼합니다!",
+    description: "6월 20일 토요일 1시 40분",
+  },
 };
 
 export default function RootLayout({

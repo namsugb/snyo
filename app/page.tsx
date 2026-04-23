@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 const galleryMoments = [
   { title: "First hello", src: "/KakaoTalk_20260301_000807942.jpg", rotate: "-rotate-[1.8deg]" },
@@ -108,6 +108,29 @@ function NavIcon({ icon }: { icon: (typeof sectionNavItems)[number]["icon"] }) {
     default:
       return null;
   }
+}
+
+function NoticeSectionHeading({ children }: { children: ReactNode }) {
+  return (
+    <p className="flex items-center justify-center gap-1.5 font-medium">
+      <svg
+        className="h-[1.05em] w-[1.05em] shrink-0 text-black"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+      >
+        <path
+          d="M20 6L9 17l-5-5"
+          stroke="currentColor"
+          strokeWidth="2.2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+      <span>{children}</span>
+    </p>
+  );
 }
 
 function GalleryModal({
@@ -597,7 +620,7 @@ export default function Home() {
                 href="https://map.kakao.com/link/search/%EC%95%84%EC%9D%B4%EB%B2%A1%EC%8A%A4%EC%BB%A8%EB%B2%A4%EC%85%98"
                 target="_blank"
                 rel="noreferrer"
-                className="rounded-full border px-4 py-3 text-center text-xs tracking-[0.2em] text-ink-accent uppercase transition-transform duration-200 hover:-translate-y-0.5"
+                className="rounded-full border border-black px-4 py-3 text-center text-xs tracking-[0.2em] text-ink-accent uppercase transition-transform duration-200 hover:-translate-y-0.5"
               >
                 Kakao Map
               </a>
@@ -605,7 +628,7 @@ export default function Home() {
                 href="https://map.naver.com/p/search/%EC%95%84%EC%9D%B4%EB%B2%A1%EC%8A%A4%EC%BB%A8%EB%B2%A4%EC%85%98"
                 target="_blank"
                 rel="noreferrer"
-                className="rounded-full border border-accent-sage/40 px-4 py-3 text-center text-xs tracking-[0.2em] text-ink-accent uppercase transition-transform duration-200 hover:-translate-y-0.5"
+                className="rounded-full border border-black px-4 py-3 text-center text-xs tracking-[0.2em] text-ink-accent uppercase transition-transform duration-200 hover:-translate-y-0.5"
               >
                 Naver Map
               </a>
@@ -629,7 +652,7 @@ export default function Home() {
               <p className="text-[15px] font-medium tracking-tight sm:text-base">[주차관련안내]</p>
               <div className="mt-7 space-y-6 text-[13px] font-normal leading-[1.75] tracking-[-0.01em] sm:mt-8 sm:text-sm sm:leading-[1.8]">
                 <div className="space-y-2">
-                  <p className="font-medium">✅주차안내</p>
+                  <NoticeSectionHeading>주차안내</NoticeSectionHeading>
                   <p>- 지하 5~6층 주차해야 편해요</p>
                   <p>- 기둥에 &apos;IVEX&apos; 표시된 구역에 주차하시면 엘리베이터 이용이 편리합니다</p>
                 </div>
@@ -639,7 +662,7 @@ export default function Home() {
                   안내요원이 계시니 편하게 물어봐주세요
                 </p>
                 <div className="space-y-2">
-                  <p className="font-medium">✅주차 정산 안내</p>
+                  <NoticeSectionHeading>주차 정산 안내</NoticeSectionHeading>
                   <p>2시간 무료, 웨딩홀 로비 웰컴드링크존 노트북으로 셀프정산</p>
                 </div>
               </div>
@@ -698,7 +721,7 @@ export default function Home() {
               />
             </div>
 
-            <div className="mt-7 rounded-[28px] border border-border-soft/80 px-5 py-7 text-left">
+            <div className="mt-7 rounded-[28px] border border-black px-5 py-7 text-left">
               <p className="font-display text-2xl text-center">참석의사전달</p>
               <p className="mt-2 text-center text-sm leading-6 text-text-secondary">
                 참석 여부를 남겨주시면
@@ -709,7 +732,7 @@ export default function Home() {
               <div className="mt-6 space-y-4">
                 <div>
                   <label className="mb-2 block text-sm text-text-secondary">성함</label>
-                  <div className="rounded-2xl border border-border-soft/80 px-4 py-3 text-sm text-text-secondary">
+                  <div className="rounded-2xl border border-black px-4 py-3 text-sm text-text-secondary">
                     이름을 입력해주세요
                   </div>
                 </div>
@@ -717,10 +740,10 @@ export default function Home() {
                 <div>
                   <label className="mb-2 block text-sm text-text-secondary">참석 여부</label>
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="rounded-2xl border border-border-soft/80 px-4 py-3 text-center text-sm text-text-secondary">
+                    <div className="rounded-2xl border border-black px-4 py-3 text-center text-sm text-text-secondary">
                       참석
                     </div>
-                    <div className="rounded-2xl border border-border-soft/80 px-4 py-3 text-center text-sm text-text-secondary">
+                    <div className="rounded-2xl border border-black px-4 py-3 text-center text-sm text-text-secondary">
                       불참
                     </div>
                   </div>
@@ -728,14 +751,14 @@ export default function Home() {
 
                 <div>
                   <label className="mb-2 block text-sm text-text-secondary">동행 인원</label>
-                  <div className="rounded-2xl border border-border-soft/80 px-4 py-3 text-sm text-text-secondary">
+                  <div className="rounded-2xl border border-black px-4 py-3 text-sm text-text-secondary">
                     동행 인원을 선택해주세요
                   </div>
                 </div>
 
                 <div>
                   <label className="mb-2 block text-sm text-text-secondary">전달 말씀</label>
-                  <div className="min-h-28 rounded-2xl border border-border-soft/80 px-4 py-3 text-sm text-text-secondary">
+                  <div className="min-h-28 rounded-2xl border border-black px-4 py-3 text-sm text-text-secondary">
                     축하 메시지를 남겨주세요
                   </div>
                 </div>
@@ -743,14 +766,14 @@ export default function Home() {
 
               <button
                 type="button"
-                className="mt-5 w-full rounded-full border border-accent-rose/35 px-6 py-3 text-sm tracking-[0.18em] text-ink-accent transition-transform duration-200 hover:-translate-y-0.5"
+                className="mt-5 w-full rounded-full border border-black px-6 py-3 text-sm tracking-[0.18em] text-ink-accent transition-transform duration-200 hover:-translate-y-0.5"
               >
                 RSVP soon
               </button>
             </div>
 
-            <div className="mt-5 rounded-[28px] border-2 border-dashed border-accent-sage/35 px-5 py-7">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border border-accent-sage/30 text-2xl text-ink-accent">
+            <div className="mt-5 rounded-[28px] border-2 border-dashed border-black px-5 py-7">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border border-black text-2xl text-ink-accent">
                 +
               </div>
               <p className="mt-4 font-display text-2xl">Photo Upload</p>
@@ -761,7 +784,7 @@ export default function Home() {
               </p>
               <button
                 type="button"
-                className="mt-5 rounded-full border border-accent-rose/35 px-6 py-3 text-sm tracking-[0.18em] text-ink-accent uppercase transition-transform duration-200 hover:-translate-y-0.5"
+                className="mt-5 rounded-full border border-black px-6 py-3 text-sm tracking-[0.18em] text-ink-accent uppercase transition-transform duration-200 hover:-translate-y-0.5"
               >
                 Upload soon
               </button>

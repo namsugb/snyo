@@ -529,7 +529,7 @@ export default function Home() {
               />
             </div>
 
-            <div className="mt-6 text-center">
+            <div className="my-6 text-center">
               <p className="font-display text-lg">2026년 6월 20일 토요일 오후 1시 40분</p>
             </div>
 
@@ -625,7 +625,7 @@ export default function Home() {
               />
             </div>
 
-            <div className="relative mx-auto w-full max-w-sm overflow-hidden rounded-sm bg-[#eaeaea] px-4 py-9 text-center text-[#383838] film-grain sm:max-w-md sm:px-6 sm:py-10">
+            <div className="relative mx-auto w-full max-w-sm overflow-hidden rounded-sm bg-[#f8f4f4] px-4 py-9 text-center text-[#383838] film-grain sm:max-w-md sm:px-6 sm:py-10">
               <p className="text-[15px] font-medium tracking-tight sm:text-base">[주차관련안내]</p>
               <div className="mt-7 space-y-6 text-[13px] font-normal leading-[1.75] tracking-[-0.01em] sm:mt-8 sm:text-sm sm:leading-[1.8]">
                 <div className="space-y-2">
@@ -698,18 +698,12 @@ export default function Home() {
               />
             </div>
 
-            <p className="mx-auto mt-4 max-w-md text-sm leading-7 text-text-secondary">
-              참석 여부와 함께 마음을 남겨주시고,
-              <br />
-              예식 당일 사진도 편하게 공유해주세요.
-            </p>
-
             <div className="mt-7 rounded-[28px] border border-border-soft/80 px-5 py-7 text-left">
               <p className="font-display text-2xl text-center">참석의사전달</p>
               <p className="mt-2 text-center text-sm leading-6 text-text-secondary">
-                참석 여부를 남길 수 있는 자리입니다.
-                <br />
-                신청 기능은 이후 연동 예정입니다.
+                참석 여부를 남겨주시면
+
+                준비에 많은 도움이 됩니다.
               </p>
 
               <div className="mt-6 space-y-4">

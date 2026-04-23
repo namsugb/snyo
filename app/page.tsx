@@ -30,7 +30,7 @@ const accountGroups = [
   {
     title: "신부측 계좌번호",
     entries: [
-      { name: "남승효", bank: "농협은행", account: "351 0573 5575 43" },
+      { name: "남승효", bank: "국민은행", account: "246602 04 327707" },
       { name: "남유행", bank: "농협은행", account: "351 0573 5575 43" },
       { name: "김은실", bank: "농협은행", account: "351 0573 5575 43" },
 
@@ -326,7 +326,7 @@ export default function Home() {
         <div className="mx-auto min-h-screen w-full overflow-hidden rounded-none border-x border-border-soft/80 bg-white px-5 pb-18 pt-6 shadow-none sm:px-7 lg:max-w-4xl lg:rounded-[34px] lg:border lg:shadow-[0_24px_80px_rgba(120,88,76,0.12)]">
 
           {/* 메인 — 콘텐츠 높이에 맞춤 (빈 min-height·flex-1로 섹션 간 공백이 벌어지지 않게) */}
-          <section className="pt-2 pb-2 sm:pb-3 lg:pt-1 lg:pb-3">
+          <section className="pt-2 pb-4 sm:pb-5 lg:pt-1 lg:pb-5">
             <div className="flex justify-center items-center">
               <Image
                 src="/새-03.png"
@@ -341,7 +341,7 @@ export default function Home() {
               <div className="relative w-full lg:mx-auto lg:max-w-lg">
                 <div className="relative aspect-[4/5] overflow-hidden rounded-b-[12px] rounded-tl-[50%_42%] rounded-tr-[50%_42%]">
                   <Image
-                    src="/KakaoTalk_20260301_000807942_09.jpg"
+                    src="/main.jpg"
                     alt="남승효 윤준영 웨딩 사진"
                     fill
                     priority
@@ -354,7 +354,7 @@ export default function Home() {
           </section>
 
           {/* 초대말 */}
-          <section className="my-10 text-center pt-4 pb-12 sm:pt-6 sm:pb-6">
+          <section className="py-10 text-center sm:py-14">
             <div className="flex flex-col items-center justify-center">
               <SectionOrnament
                 src="/flower.png"
@@ -363,15 +363,31 @@ export default function Home() {
                 height={74}
                 className="h-auto w-24 opacity-90 sm:w-28"
               />
-              <div className="relative mx-auto w-full max-w-xs aspect-[3/4] overflow-hidden">
-                <Image
-                  src="/invitation.jpg"
-                  alt="웨딩 초대장 느낌의 원본 스캔 이미지"
-                  priority
-                  fill
-                  className="object-cover w-full h-full"
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 320px"
-                />
+              <div className="mx-auto w-full max-w-xs bg-white px-2 py-8 text-center text-[#333333] sm:px-3 sm:py-10">
+                <p className="text-[13px] font-normal leading-[1.75] tracking-[-0.01em] sm:text-sm sm:leading-[1.8]">
+                  함께 보내는 아홉 번째 여름,
+                  <br />
+                  수많은 계절을 함께 걸어온 저희가
+                  <br />
+                  평생을 함께할 약속을 하고자 합니다.
+                </p>
+                <p className="mt-5 text-[13px] font-normal leading-[1.75] tracking-[-0.01em] sm:mt-6 sm:text-sm sm:leading-[1.8]">
+                  저희의 새로운 시작에
+                  <br />
+                  따뜻한 발걸음으로 함께해주신다면
+                  <br />
+                  깊은 감사와 기쁨으로 간직하겠습니다.
+                </p>
+                <p className="mt-9 text-[13px] font-normal leading-[1.75] tracking-[-0.01em] sm:mt-10 sm:text-sm sm:leading-[1.8]">
+                  윤우영 · 이민자의 장남 <span className="font-semibold text-[#2a2a2a]">준영</span>
+                  <br />
+                  남유행 · 김은실의 장녀 <span className="font-semibold text-[#2a2a2a]">승효</span>
+                </p>
+                <p className="mt-7 text-[13px] font-normal leading-[1.75] tracking-[-0.01em] sm:mt-8 sm:text-sm sm:leading-[1.8]">
+                  2026년 6월 20일 토요일 오후 1시 40분
+                  <br />
+                  아이벡스 컨벤션
+                </p>
               </div>
             </div>
           </section>
@@ -379,17 +395,17 @@ export default function Home() {
 
 
           {/* 갤러리 */}
-          <section id="gallery" className="py-8 sm:py-20">
+          <section id="gallery" className="py-10 sm:py-14">
 
             {/* 1*2 */}
-            <div className="w-screen relative left-1/2 right-1/2 mb-8 -translate-x-1/2">
+            <div className="relative left-1/2 right-1/2 mb-8 w-screen max-w-none -translate-x-1/2 lg:static lg:mx-auto lg:w-full lg:max-w-lg lg:translate-x-0">
               <div className="relative aspect-[8/12] w-full overflow-hidden">
                 <Image
                   src="/KakaoTalk_20260301_000807942_09.jpg"
                   alt="웨딩 갤러리 대형 이미지"
                   fill
                   priority={false}
-                  sizes="100vw"
+                  sizes="(min-width: 1024px) 32rem, 100vw"
                   className="object-cover"
                 />
               </div>
@@ -426,16 +442,16 @@ export default function Home() {
 
 
           {/* 날짜 */}
-          <section id="day" className="py-16 sm:py-20">
-            <div className="mb-5 flex items-end justify-between">
-              <div>
-                <p className="font-script text-[1.65rem] text-text-secondary">The day</p>
-              </div>
-              <p className="text-right text-xs leading-5 tracking-[0.18em] text-text-secondary uppercase">
-                June
-                <br />
-                2026
-              </p>
+          <section id="day" className="py-10 sm:py-14">
+            <div className="mb-5 flex justify-center">
+              <Image
+                src="/calendar.png"
+                alt="Wedding calendar illustration"
+                width={320}
+                height={170}
+                className="h-auto w-24 bg-white sm:w-28"
+                priority
+              />
             </div>
 
             <div className="grid grid-cols-7 gap-2 text-center text-xs text-text-secondary">
@@ -467,39 +483,34 @@ export default function Home() {
               })}
             </div>
 
-            <div className="mt-8 flex justify-center">
-              <Image
-                src="/calendar.png"
-                alt="Wedding calendar illustration"
-                width={320}
-                height={170}
-                className=" bg-white"
-                priority
-              />
-            </div>
-
-
             <div className="mt-6 text-center">
-              <p className="font-display text-lg">2026년 6월 20일 토요일 오후 2시</p>
+              <p className="font-display text-lg">2026년 6월 20일 토요일 오후 1시 40분</p>
             </div>
           </section>
 
 
 
           {/* 위치 및 지도 */}
-          <section id="place" className="py-16 sm:py-20">
-            <p className="font-script text-[1.65rem] text-text-secondary">Place</p>
+          <section id="place" className="py-10 sm:py-14">
+            <div className="flex justify-center">
+              <Image
+                src="/map.png"
+                alt="오시는 길"
+                width={1425}
+                height={1104}
+                className="h-auto w-24 bg-white sm:w-28 -mb-6 z-10"
+              />
+            </div>
 
-            <div className="mt-6 overflow-hidden">
-              <div className="relative aspect-[5/8] overflow-hidden bg-white sm:aspect-[5/7]">
-                <Image
-                  src="/info.jpg"
-                  alt="아이벡스컨벤션 안내 이미지"
-                  fill
-                  sizes="(max-width: 640px) 92vw, (max-width: 1024px) 80vw, 720px"
-                  className="object-cover"
-                />
-              </div>
+            <div className="overflow-hidden bg-white">
+              <Image
+                src="/way.jpg"
+                alt="아이벡스컨벤션 안내 이미지"
+                width={767}
+                height={1522}
+                sizes="(max-width: 640px) 92vw, (max-width: 1024px) 80vw, 560px"
+                className="h-auto w-full"
+              />
             </div>
 
 
@@ -526,24 +537,40 @@ export default function Home() {
 
 
 
-          <section id="notice" className="py-16 sm:py-20">
-            <p className="font-script text-[1.65rem] text-text-secondary">Notice</p>
+          <section id="notice" className="py-10 sm:py-14">
+            <div className="mb-5 flex justify-center">
+              <Image
+                src="/notice.png"
+                alt="안내사항"
+                width={1448}
+                height={1086}
+                className="h-auto w-24 bg-white sm:w-28"
+              />
+            </div>
 
-            <div className="mt-6 overflow-hidden">
-              <div className="relative aspect-[6/5] overflow-hidden bg-white">
-                <Image
-                  src="/notice.jpg"
-                  alt="안내사항 이미지"
-                  fill
-                  sizes="(max-width: 640px) 92vw, (max-width: 1024px) 80vw, 720px"
-                  className="object-contain"
-                />
+            <div className="relative mx-auto w-full max-w-sm overflow-hidden rounded-sm bg-[#eaeaea] px-4 py-9 text-center text-[#383838] film-grain sm:max-w-md sm:px-6 sm:py-10">
+              <p className="text-[15px] font-medium tracking-tight sm:text-base">[주차관련안내]</p>
+              <div className="mt-7 space-y-6 text-[13px] font-normal leading-[1.75] tracking-[-0.01em] sm:mt-8 sm:text-sm sm:leading-[1.8]">
+                <div className="space-y-2">
+                  <p className="font-medium">✅주차안내</p>
+                  <p>- 지하 5~6층 주차해야 편해요</p>
+                  <p>- 기둥에 &apos;IVEX&apos; 표시된 구역에 주차하시면 엘리베이터 이용이 편리합니다</p>
+                </div>
+                <p className="font-medium text-[#2c2c2c]">
+                  층마다 노란조끼를 입은 아이벡스
+                  <br />
+                  안내요원이 계시니 편하게 물어봐주세요
+                </p>
+                <div className="space-y-2">
+                  <p className="font-medium">✅주차 정산 안내</p>
+                  <p>2시간 무료, 웨딩홀 로비 웰컴드링크존 노트북으로 셀프정산</p>
+                </div>
               </div>
             </div>
           </section>
 
 
-          <section id="account" className="py-16 sm:py-20">
+          <section id="account" className="py-10 sm:py-14">
             <p className=" text-[1.65rem] text-text-secondary">마음전할곳</p>
 
             <div className="mt-6 space-y-10">
@@ -582,8 +609,17 @@ export default function Home() {
 
 
 
-          <section id="upload" className="py-16 pb-8 text-center sm:py-20 sm:pb-10">
-            <p className="font-script text-[1.7rem] text-text-secondary">For guests</p>
+          <section id="upload" className="py-10 text-center sm:py-14">
+            <div className="flex justify-center">
+              <Image
+                src="/새-03.png"
+                alt="하객 참석 · 사진 안내"
+                width={204}
+                height={124}
+                className="h-auto w-24 soft-float sm:w-28"
+                style={{ pointerEvents: "none", userSelect: "none" }}
+              />
+            </div>
 
             <p className="mx-auto mt-4 max-w-md text-sm leading-7 text-text-secondary">
               참석 여부와 함께 마음을 남겨주시고,

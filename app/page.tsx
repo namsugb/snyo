@@ -248,6 +248,78 @@ export default function Home() {
     };
   }, [selectedMoment, showIntro]);
 
+  /** 긴 섹션: 휠 다운 시 끝에 맞춘 뒤 한 번 더 내려야 다음 섹션 상단으로 이동 (터치·모션 축소 시 비활성) */
+  useEffect(() => {
+    const wrapper = document.getElementById("scroll-sections-wrapper");
+    if (!wrapper) return;
+
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const coarse = window.matchMedia("(pointer: coarse)");
+    if (reduced.matches || coarse.matches) return;
+
+    const getSections = () =>
+      Array.from(wrapper.querySelectorAll<HTMLElement>(":scope > section"));
+
+    const docTop = (el: HTMLElement) => el.getBoundingClientRect().top + window.scrollY;
+
+    let armedIndex: number | null = null;
+
+    const onWheel = (e: WheelEvent) => {
+      if (showIntro || selectedMoment) {
+        armedIndex = null;
+        return;
+      }
+      if (e.deltaY <= 0) {
+        armedIndex = null;
+        return;
+      }
+
+      const secs = getSections();
+      if (secs.length < 2) return;
+
+      const vh = window.innerHeight;
+      const scrollY = window.scrollY;
+
+      let current = -1;
+      for (let i = 0; i < secs.length; i++) {
+        if (docTop(secs[i]) <= scrollY + 2) current = i;
+      }
+      if (current < 0 || current >= secs.length - 1) {
+        armedIndex = null;
+        return;
+      }
+
+      const el = secs[current];
+      const top = docTop(el);
+      const h = el.offsetHeight;
+      const scrollRoom = h - vh;
+      if (scrollRoom <= 80) {
+        armedIndex = null;
+        return;
+      }
+
+      const scrolledIn = scrollY - top;
+      const atEnd = scrolledIn >= scrollRoom - 20;
+      if (!atEnd) {
+        armedIndex = null;
+        return;
+      }
+
+      if (armedIndex === current) {
+        e.preventDefault();
+        secs[current + 1].scrollIntoView({ behavior: "smooth", block: "start" });
+        armedIndex = null;
+      } else {
+        e.preventDefault();
+        window.scrollTo({ top: top + scrollRoom, behavior: "smooth" });
+        armedIndex = current;
+      }
+    };
+
+    window.addEventListener("wheel", onWheel, { passive: false });
+    return () => window.removeEventListener("wheel", onWheel);
+  }, [showIntro, selectedMoment]);
+
   const handleCopyAccount = async (account: string) => {
     try {
       await navigator.clipboard.writeText(account);
@@ -323,10 +395,13 @@ export default function Home() {
         id="top"
         className={`relative min-h-screen overflow-hidden bg-white text-foreground transition-opacity duration-300 ${showIntro ? "pointer-events-none opacity-0" : "opacity-100"}`}
       >
-        <div className="mx-auto min-h-screen w-full overflow-hidden rounded-none border-x border-border-soft/80 bg-white px-5 pb-18 pt-6 shadow-none sm:px-7 lg:max-w-4xl lg:rounded-[34px] lg:border lg:shadow-[0_24px_80px_rgba(120,88,76,0.12)]">
+        <div
+          id="scroll-sections-wrapper"
+          className="mx-auto min-h-screen w-full overflow-hidden rounded-none border-x border-border-soft/80 bg-white px-5 pb-18 pt-6 shadow-none sm:px-7 lg:max-w-4xl lg:rounded-[34px] lg:border lg:shadow-[0_24px_80px_rgba(120,88,76,0.12)]"
+        >
 
           {/* 메인 — 콘텐츠 높이에 맞춤 (빈 min-height·flex-1로 섹션 간 공백이 벌어지지 않게) */}
-          <section className="pt-2 pb-4 sm:pb-5 lg:pt-1 lg:pb-5">
+          <section className="scroll-snap-section pt-2 pb-4 sm:pb-5 lg:pt-1 lg:pb-5">
             <div className="flex justify-center items-center">
               <Image
                 src="/새-03.png"
@@ -354,7 +429,7 @@ export default function Home() {
           </section>
 
           {/* 초대말 */}
-          <section className="py-10 text-center sm:py-14">
+          <section className="scroll-snap-section py-10 text-center sm:py-14">
             <div className="flex flex-col items-center justify-center">
               <SectionOrnament
                 src="/flower.png"
@@ -364,26 +439,26 @@ export default function Home() {
                 className="h-auto w-24 opacity-90 sm:w-28"
               />
               <div className="mx-auto w-full max-w-xs bg-white px-2 py-8 text-center text-[#333333] sm:px-3 sm:py-10">
-                <p className="text-[13px] font-normal leading-[1.75] tracking-[-0.01em] sm:text-sm sm:leading-[1.8]">
+                <p className="text-base font-normal leading-[1.75] tracking-[-0.01em] sm:leading-[1.8]">
                   함께 보내는 아홉 번째 여름,
                   <br />
                   수많은 계절을 함께 걸어온 저희가
                   <br />
                   평생을 함께할 약속을 하고자 합니다.
                 </p>
-                <p className="mt-5 text-[13px] font-normal leading-[1.75] tracking-[-0.01em] sm:mt-6 sm:text-sm sm:leading-[1.8]">
+                <p className="mt-5 text-base font-normal leading-[1.75] tracking-[-0.01em] sm:mt-6 sm:leading-[1.8]">
                   저희의 새로운 시작에
                   <br />
                   따뜻한 발걸음으로 함께해주신다면
                   <br />
                   깊은 감사와 기쁨으로 간직하겠습니다.
                 </p>
-                <p className="mt-9 text-[13px] font-normal leading-[1.75] tracking-[-0.01em] sm:mt-10 sm:text-sm sm:leading-[1.8]">
+                <p className="mt-9 text-base font-normal leading-[1.75] tracking-[-0.01em] sm:mt-10 sm:leading-[1.8]">
                   윤우영 · 이민자의 장남 <span className="font-semibold text-[#2a2a2a]">준영</span>
                   <br />
                   남유행 · 김은실의 장녀 <span className="font-semibold text-[#2a2a2a]">승효</span>
                 </p>
-                <p className="mt-7 text-[13px] font-normal leading-[1.75] tracking-[-0.01em] sm:mt-8 sm:text-sm sm:leading-[1.8]">
+                <p className="mt-7 text-base font-normal leading-[1.75] tracking-[-0.01em] sm:mt-8 sm:leading-[1.8]">
                   2026년 6월 20일 토요일 오후 1시 40분
                   <br />
                   아이벡스 컨벤션
@@ -395,7 +470,7 @@ export default function Home() {
 
 
           {/* 갤러리 */}
-          <section id="gallery" className="py-10 sm:py-14">
+          <section id="gallery" className="scroll-snap-section py-10 sm:py-14">
 
             {/* 1*2 */}
             <div className="relative left-1/2 right-1/2 mb-8 w-screen max-w-none -translate-x-1/2 lg:static lg:mx-auto lg:w-full lg:max-w-lg lg:translate-x-0">
@@ -442,7 +517,7 @@ export default function Home() {
 
 
           {/* 날짜 */}
-          <section id="day" className="py-10 sm:py-14">
+          <section id="day" className="scroll-snap-section py-10 sm:py-14">
             <div className="mb-5 flex justify-center">
               <Image
                 src="/calendar.png"
@@ -452,6 +527,10 @@ export default function Home() {
                 className="h-auto w-24 bg-white sm:w-28"
                 priority
               />
+            </div>
+
+            <div className="mt-6 text-center">
+              <p className="font-display text-lg">2026년 6월 20일 토요일 오후 1시 40분</p>
             </div>
 
             <div className="grid grid-cols-7 gap-2 text-center text-xs text-text-secondary">
@@ -483,15 +562,13 @@ export default function Home() {
               })}
             </div>
 
-            <div className="mt-6 text-center">
-              <p className="font-display text-lg">2026년 6월 20일 토요일 오후 1시 40분</p>
-            </div>
+
           </section>
 
 
 
           {/* 위치 및 지도 */}
-          <section id="place" className="py-10 sm:py-14">
+          <section id="place" className="scroll-snap-section py-10 sm:py-14">
             <div className="flex justify-center">
               <Image
                 src="/map.png"
@@ -537,7 +614,7 @@ export default function Home() {
 
 
 
-          <section id="notice" className="py-10 sm:py-14">
+          <section id="notice" className="scroll-snap-section py-10 sm:py-14">
             <div className="mb-5 flex justify-center">
               <Image
                 src="/notice.png"
@@ -570,7 +647,7 @@ export default function Home() {
           </section>
 
 
-          <section id="account" className="py-10 sm:py-14">
+          <section id="account" className="scroll-snap-section py-10 sm:py-14">
             <p className=" text-[1.65rem] text-text-secondary">마음전할곳</p>
 
             <div className="mt-6 space-y-10">
@@ -609,7 +686,7 @@ export default function Home() {
 
 
 
-          <section id="upload" className="py-10 text-center sm:py-14">
+          <section id="upload" className="scroll-snap-section py-10 text-center sm:py-14">
             <div className="flex justify-center">
               <Image
                 src="/새-03.png"

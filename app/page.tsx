@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { submitGuestPhoto, submitWeddingRsvp } from "@/app/actions/wedding";
+import { submitGuestPhotos, submitWeddingRsvp } from "@/app/actions/wedding";
 import Image from "next/image";
 import {
   useEffect,
@@ -58,39 +58,16 @@ const sectionNavItems = [
   { href: "#upload", label: "Guest", icon: "message" },
 ];
 
-/** iOS·Android 등에서 .ics 열기 → 기본 캘린더에 일정 추가 */
-function downloadWeddingIcs() {
-  const dtStamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
-  const summary = "준영❤️승효 결혼합니다!";
-  const description = "2026년 6월 20일 토요일 오후 1시 40분\\n아이벡스컨벤션";
-  const location = "경기 광명시 양지로 17 AK 플라자 광명 5층 아이벡스컨벤션";
-  const lines = [
-    "BEGIN:VCALENDAR",
-    "VERSION:2.0",
-    "PRODID:-//snyo//Wedding//KO",
-    "CALSCALE:GREGORIAN",
-    "METHOD:PUBLISH",
-    "BEGIN:VEVENT",
-    "UID:snyo-wedding-20260620@snyo.local",
-    `DTSTAMP:${dtStamp}`,
-    "DTSTART:20260620T044000Z",
-    "DTEND:20260620T074000Z",
-    `SUMMARY:${summary}`,
-    `DESCRIPTION:${description}`,
-    `LOCATION:${location}`,
-    "END:VEVENT",
-    "END:VCALENDAR",
-  ];
-  const ics = lines.join("\r\n");
-  const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "wedding-2026-06-20.ics";
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+/**
+ * .ics는 서버(`/api/wedding-calendar`)에서 내려받도록 함.
+ * iOS는 Blob+다운로드 시 '미리보기'만 열리고 '완료'는 저장이 아니라 닫기 — 공유 메뉴에서 캘린더 추가 필요.
+ */
+function openWeddingCalendar() {
+  const url = new URL("/api/wedding-calendar", window.location.origin).toString();
+  const opened = window.open(url, "_blank", "noopener,noreferrer");
+  if (!opened) {
+    window.location.href = url;
+  }
 }
 
 const RSVP_PROMO_DISMISS_KEY = "snyo-rsvp-dismiss-until";
@@ -463,17 +440,22 @@ function GuestPhotoUploader() {
   };
 
   const onFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+    const list = e.target.files;
     e.target.value = "";
-    if (!file) return;
+    if (!list?.length) return;
     setNotice(null);
     startTransition(() => {
       void (async () => {
         const fd = new FormData();
-        fd.append("file", file);
-        const result = await submitGuestPhoto(fd);
+        for (let i = 0; i < list.length; i += 1) {
+          fd.append("files", list[i]);
+        }
+        const result = await submitGuestPhotos(fd);
         if (result.ok) {
-          setNotice({ kind: "ok", text: "업로드되었습니다. 감사합니다!" });
+          setNotice({
+            kind: "ok",
+            text: `${result.count}장 업로드되었습니다. 감사합니다!`,
+          });
         } else {
           setNotice({ kind: "err", text: result.error });
         }
@@ -486,6 +468,7 @@ function GuestPhotoUploader() {
       <input
         ref={inputRef}
         type="file"
+        multiple
         accept="image/jpeg,image/png,image/webp,image/gif"
         className="sr-only"
         onChange={onFileChange}
@@ -1089,15 +1072,20 @@ export default function Home() {
               })}
             </div>
 
-            <div className="mt-6 flex justify-center px-2">
+            <div className="mt-6 flex flex-col items-center gap-2 px-2">
               <button
                 type="button"
-                onClick={downloadWeddingIcs}
+                onClick={openWeddingCalendar}
                 aria-label="휴대폰 캘린더에 결혼식 일정 추가"
                 className="w-full max-w-[300px] rounded-full border border-black bg-white px-4 py-3 text-center text-sm font-medium tracking-wide text-ink-accent transition-transform duration-200 hover:-translate-y-0.5 active:scale-[0.98]"
               >
                 캘린더에 등록
               </button>
+              <p className="max-w-[300px] text-center text-[11px] leading-relaxed text-text-secondary">
+                iPhone에서는 새 탭에서 일정이 열릴 수 있어요. 미리보기에서 <strong className="font-medium text-foreground">왼쪽 아래 공유</strong>
+                를 누른 뒤 <strong className="font-medium text-foreground">캘린더에 추가</strong>를 선택해 주세요. (완료는
+                창만 닫습니다.)
+              </p>
             </div>
           </section>
 
@@ -1269,6 +1257,8 @@ export default function Home() {
               <p className="mt-4 font-display text-2xl">Photo Upload</p>
               <p className="mt-2 text-sm leading-6 text-text-secondary">
                 소중한 추억을 함께 나누어요
+                <br />
+                <span className="text-xs">사진 여러 장을 한 번에 선택할 수 있어요. (최대 15장, 각 10MB)</span>
               </p>
               <div className="mt-5 flex justify-center">
                 <GuestPhotoUploader />

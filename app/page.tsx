@@ -1,7 +1,17 @@
 ﻿"use client";
 
+import { submitGuestPhoto, submitWeddingRsvp } from "@/app/actions/wedding";
 import Image from "next/image";
-import { useEffect, useState, type ReactNode } from "react";
+import {
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  useTransition,
+  type ChangeEvent,
+  type FormEvent,
+  type ReactNode,
+} from "react";
 
 const galleryMoments = [
   { title: "First hello", src: "/KakaoTalk_20260301_000807942.jpg", rotate: "-rotate-[1.8deg]" },
@@ -47,6 +57,532 @@ const sectionNavItems = [
   { href: "#account", label: "Account", icon: "heart" },
   { href: "#upload", label: "Guest", icon: "message" },
 ];
+
+/** iOS·Android 등에서 .ics 열기 → 기본 캘린더에 일정 추가 */
+function downloadWeddingIcs() {
+  const dtStamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
+  const summary = "준영❤️승효 결혼합니다!";
+  const description = "2026년 6월 20일 토요일 오후 1시 40분\\n아이벡스컨벤션";
+  const location = "경기 광명시 양지로 17 AK 플라자 광명 5층 아이벡스컨벤션";
+  const lines = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//snyo//Wedding//KO",
+    "CALSCALE:GREGORIAN",
+    "METHOD:PUBLISH",
+    "BEGIN:VEVENT",
+    "UID:snyo-wedding-20260620@snyo.local",
+    `DTSTAMP:${dtStamp}`,
+    "DTSTART:20260620T044000Z",
+    "DTEND:20260620T074000Z",
+    `SUMMARY:${summary}`,
+    `DESCRIPTION:${description}`,
+    `LOCATION:${location}`,
+    "END:VEVENT",
+    "END:VCALENDAR",
+  ];
+  const ics = lines.join("\r\n");
+  const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "wedding-2026-06-20.ics";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+const RSVP_PROMO_DISMISS_KEY = "snyo-rsvp-dismiss-until";
+
+const WEDDING_RSVP_DETAILS = {
+  couple: "신랑 윤준영 & 신부 남승효",
+  when: "2026년 6월 20일 토요일 오후 1시 40분",
+  where: "아이벡스컨벤션",
+  whereFull: "경기 광명시 양지로 17 AK 플라자 광명 5층 아이벡스컨벤션",
+} as const;
+
+function RsvpIntroCopy({ className = "" }: { className?: string }) {
+  return (
+    <p className={`text-center text-sm leading-relaxed text-foreground ${className}`}>
+      축하의 마음으로 참석해 주실
+      <br />
+      모든 분을 정중히 모시고자 하오니,
+      <br />
+      참석 여부를 알려주시면 감사하겠습니다.
+    </p>
+  );
+}
+
+function RsvpEventDetails({ className = "" }: { className?: string }) {
+  const rows: { k: string; v: string }[] = [
+    { k: "주인공", v: WEDDING_RSVP_DETAILS.couple },
+    { k: "예식일", v: WEDDING_RSVP_DETAILS.when },
+    { k: "위치", v: WEDDING_RSVP_DETAILS.where },
+  ];
+  return (
+    <div className={`mx-auto w-full max-w-sm space-y-2.5 text-sm ${className}`}>
+      {rows.map((row) => (
+        <div
+          key={row.k}
+          className="flex gap-3 border-b border-border-soft pb-2.5 last:border-b-0 last:pb-0"
+        >
+          <span className="w-14 shrink-0 text-left text-text-secondary">{row.k}</span>
+          <span className="flex-1 text-right font-medium text-foreground">{row.v}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function RsvpPromoSheet({
+  open,
+  onClose,
+  onDismissToday,
+  onOpenForm,
+}: {
+  open: boolean;
+  onClose: () => void;
+  onDismissToday: () => void;
+  onOpenForm: () => void;
+}) {
+  if (!open) {
+    return null;
+  }
+
+  return (
+    <div
+      className="fixed inset-0 z-[46] flex flex-col justify-end"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="rsvp-promo-title"
+    >
+      <button
+        type="button"
+        className="absolute inset-0 z-0 bg-black/45"
+        aria-label="닫기"
+        onClick={onClose}
+      />
+      <div className="relative z-10 mx-auto w-full max-w-lg rounded-t-2xl bg-white px-5 pb-6 pt-9 shadow-[0_-12px_48px_rgba(0,0,0,0.14)]">
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-full text-foreground/70 transition-colors hover:bg-black/5 hover:text-foreground"
+          aria-label="닫기"
+        >
+          <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7 7 17 17M17 7 7 17" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+          </svg>
+        </button>
+        <h2 id="rsvp-promo-title" className="text-center text-lg font-semibold text-foreground">
+          참석의사 전달
+        </h2>
+        <RsvpIntroCopy className="mt-4" />
+        <RsvpEventDetails className="mt-5" />
+        <button
+          type="button"
+          onClick={() => {
+            onClose();
+            onOpenForm();
+          }}
+          className="mt-7 w-full rounded-2xl bg-accent-rose px-4 py-3.5 text-center text-sm font-semibold text-white transition-opacity hover:opacity-92 active:opacity-88"
+        >
+          참석 의사 전달
+        </button>
+      </div>
+      <div className="relative z-10 flex justify-end gap-2 px-5 py-3 text-xs">
+        <button type="button" className="text-white/90 underline-offset-2 hover:underline" onClick={onDismissToday}>
+          오늘 그만보기
+        </button>
+        <span className="text-white/45" aria-hidden>
+          |
+        </span>
+        <button type="button" className="text-white/90 underline-offset-2 hover:underline" onClick={onClose}>
+          닫기
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function RequiredMark() {
+  return (
+    <span className="ml-0.5 text-accent-rose" aria-hidden>
+      *
+    </span>
+  );
+}
+
+function RsvpFormModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const privacyDetailsId = useId();
+  const [isPending, startTransition] = useTransition();
+  const [formError, setFormError] = useState<string | null>(null);
+  const [side, setSide] = useState<"groom" | "bride">("bride");
+  const [name, setName] = useState("");
+  const [headcount, setHeadcount] = useState("");
+  const [meal, setMeal] = useState<"planned" | "no" | "undecided" | null>(null);
+  const [privacyOpen, setPrivacyOpen] = useState(false);
+  const [privacyAgreed, setPrivacyAgreed] = useState(false);
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+    setSide("bride");
+    setName("");
+    setHeadcount("");
+    setMeal(null);
+    setPrivacyOpen(false);
+    setPrivacyAgreed(false);
+    setFormError(null);
+  }, [open]);
+
+  if (!open) {
+    return null;
+  }
+
+  const submit = (e: FormEvent) => {
+    e.preventDefault();
+    setFormError(null);
+    const n = name.trim();
+    const count = Number.parseInt(headcount.trim(), 10);
+    if (!n) {
+      window.alert("성함을 입력해 주세요.");
+      return;
+    }
+    if (!Number.isFinite(count) || count < 1) {
+      window.alert("참석인원(본인 포함 총 인원)을 숫자로 입력해 주세요.");
+      return;
+    }
+    if (meal === null) {
+      window.alert("식사여부를 선택해 주세요.");
+      return;
+    }
+    if (!privacyAgreed) {
+      window.alert("개인정보 수집 및 이용에 동의해 주세요.");
+      return;
+    }
+
+    startTransition(() => {
+      void (async () => {
+        const result = await submitWeddingRsvp({
+          side,
+          guestName: n,
+          headcount: count,
+          meal,
+        });
+        if (!result.ok) {
+          setFormError(result.error);
+          return;
+        }
+        onClose();
+        window.alert("전달되었습니다. 감사합니다!");
+      })();
+    });
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-[52] flex items-end justify-center sm:items-center"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="rsvp-form-title"
+    >
+      <button
+        type="button"
+        className="absolute inset-0 z-0 bg-black/45"
+        aria-label="닫기"
+        onClick={onClose}
+      />
+      <div className="relative z-10 flex max-h-[min(90vh,720px)] w-full max-w-md flex-col rounded-t-2xl bg-white shadow-[0_-12px_48px_rgba(0,0,0,0.18)] sm:max-h-[85vh] sm:rounded-2xl sm:shadow-xl">
+        <div className="flex shrink-0 items-center justify-between border-b border-border-soft px-5 py-4">
+          <h2 id="rsvp-form-title" className="text-base font-semibold text-foreground">
+            참석 의사 전달
+          </h2>
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex h-9 w-9 items-center justify-center rounded-full text-foreground/70 hover:bg-black/5"
+            aria-label="닫기"
+          >
+            <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M7 7 17 17M17 7 7 17" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+            </svg>
+          </button>
+        </div>
+
+        <form onSubmit={submit} className="min-h-0 flex-1 overflow-y-auto px-5 pb-6 pt-4">
+          <div className="flex border-b border-border-soft">
+            <button
+              type="button"
+              onClick={() => setSide("groom")}
+              className={`min-h-11 flex-1 border-b-2 pb-3 pt-1 text-sm font-medium transition-colors ${side === "groom" ? "border-accent-rose text-foreground" : "border-transparent text-text-secondary"}`}
+            >
+              신랑
+            </button>
+            <button
+              type="button"
+              onClick={() => setSide("bride")}
+              className={`min-h-11 flex-1 border-b-2 pb-3 pt-1 text-sm font-medium transition-colors ${side === "bride" ? "border-accent-rose text-foreground" : "border-transparent text-text-secondary"}`}
+            >
+              신부
+            </button>
+          </div>
+
+          <div className="mt-5 space-y-4">
+            <div>
+              <label htmlFor="rsvp-name" className="mb-2 block text-sm text-foreground">
+                성함
+                <RequiredMark />
+              </label>
+              <input
+                id="rsvp-name"
+                value={name}
+                onChange={(ev) => setName(ev.target.value)}
+                placeholder="참석자 성함"
+                autoComplete="name"
+                className="w-full rounded-2xl border border-black px-4 py-3 text-sm text-foreground outline-none placeholder:text-text-secondary/70 focus:ring-2 focus:ring-accent-rose/35"
+              />
+            </div>
+            <div>
+              <label htmlFor="rsvp-headcount" className="mb-2 block text-sm text-foreground">
+                참석인원
+                <RequiredMark />
+              </label>
+              <input
+                id="rsvp-headcount"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                value={headcount}
+                onChange={(ev) => setHeadcount(ev.target.value.replace(/\D/g, ""))}
+                placeholder="본인 포함 총 참석 인원수"
+                className="w-full rounded-2xl border border-black px-4 py-3 text-sm text-foreground outline-none placeholder:text-text-secondary/70 focus:ring-2 focus:ring-accent-rose/35"
+              />
+            </div>
+            <div>
+              <span className="mb-2 block text-sm text-foreground">
+                식사여부
+                <RequiredMark />
+              </span>
+              <div className="grid grid-cols-3 gap-2">
+                {(
+                  [
+                    { key: "planned" as const, label: "예정" },
+                    { key: "no" as const, label: "안함" },
+                    { key: "undecided" as const, label: "미정" },
+                  ] as const
+                ).map(({ key, label }) => (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => setMeal(key)}
+                    className={`rounded-2xl border px-2 py-3 text-center text-sm transition-colors ${meal === key ? "border-black bg-black text-white" : "border-black text-text-secondary hover:bg-black/3"}`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-5 rounded-xl border border-border-soft">
+            <button
+              type="button"
+              onClick={() => setPrivacyOpen((v) => !v)}
+              aria-expanded={privacyOpen}
+              aria-controls={privacyDetailsId}
+              className="flex w-full items-center justify-between gap-2 px-4 py-3 text-left text-sm text-foreground"
+            >
+              <span>
+                개인정보 수집 및 이용 동의{" "}
+                <span className="text-accent-rose">(필수)</span>
+              </span>
+              <svg
+                viewBox="0 0 24 24"
+                className={`h-5 w-5 shrink-0 text-text-secondary transition-transform ${privacyOpen ? "rotate-180" : ""}`}
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden
+              >
+                <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+            {privacyOpen ? (
+              <div
+                id={privacyDetailsId}
+                className="border-t border-border-soft px-4 pb-3 pt-2 text-xs leading-relaxed text-text-secondary"
+              >
+                <p>
+                  수집 항목: 성명, 참석 인원, 식사 여부
+                  <br />
+                  이용 목적: 결혼식 참석 안내 및 연락
+                  <br />
+                  보유·이용 기간: 결혼식 종료 후 지체 없이 파기합니다. 동의를 거부하실 수 있으나, 거부 시 참석 의사 전달이 제한될 수 있습니다.
+                </p>
+              </div>
+            ) : null}
+          </div>
+
+          <label className="mt-4 flex cursor-pointer items-start gap-2.5 text-sm text-foreground">
+            <input
+              type="checkbox"
+              checked={privacyAgreed}
+              onChange={(ev) => setPrivacyAgreed(ev.target.checked)}
+              className="mt-0.5 h-4 w-4 shrink-0 rounded border-black text-accent-rose focus:ring-accent-rose/40"
+            />
+            <span>수집 및 이용에 동의합니다.</span>
+          </label>
+
+          {formError ? (
+            <p className="mt-3 text-center text-sm text-accent-rose" role="alert">
+              {formError}
+            </p>
+          ) : null}
+
+          <button
+            type="submit"
+            disabled={isPending}
+            className="mt-4 w-full rounded-2xl bg-accent-rose px-4 py-3.5 text-sm font-semibold text-white transition-opacity hover:opacity-92 disabled:opacity-55"
+          >
+            {isPending ? "전달 중…" : "참석 의사 전달"}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+function GuestPhotoUploader() {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [pending, startTransition] = useTransition();
+  const [notice, setNotice] = useState<{ kind: "ok" | "err"; text: string } | null>(null);
+
+  const openPicker = () => {
+    setNotice(null);
+    inputRef.current?.click();
+  };
+
+  const onFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setNotice(null);
+    startTransition(() => {
+      void (async () => {
+        const fd = new FormData();
+        fd.append("file", file);
+        const result = await submitGuestPhoto(fd);
+        if (result.ok) {
+          setNotice({ kind: "ok", text: "업로드되었습니다. 감사합니다!" });
+        } else {
+          setNotice({ kind: "err", text: result.error });
+        }
+      })();
+    });
+  };
+
+  return (
+    <div>
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp,image/gif"
+        className="sr-only"
+        onChange={onFileChange}
+      />
+      <button
+        type="button"
+        onClick={openPicker}
+        disabled={pending}
+        className="rounded-full border border-black px-6 py-3 text-sm tracking-[0.18em] text-ink-accent uppercase transition-transform duration-200 hover:-translate-y-0.5 disabled:opacity-55"
+      >
+        {pending ? "업로드 중…" : "Upload"}
+      </button>
+      {notice ? (
+        <p
+          className={`mt-3 text-sm ${notice.kind === "ok" ? "text-foreground" : "text-accent-rose"}`}
+          role={notice.kind === "err" ? "alert" : undefined}
+        >
+          {notice.text}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
+type AccountGroup = (typeof accountGroups)[number];
+
+function AccountGroupModal({
+  group,
+  onClose,
+  copiedAccount,
+  onCopy,
+}: {
+  group: AccountGroup | null;
+  onClose: () => void;
+  copiedAccount: string | null;
+  onCopy: (account: string) => void;
+}) {
+  if (!group) {
+    return null;
+  }
+
+  return (
+    <div
+      className="fixed inset-0 z-[51] flex items-center justify-center p-4 sm:p-6"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="account-modal-title"
+    >
+      <button
+        type="button"
+        className="absolute inset-0 bg-black/45"
+        aria-label="닫기"
+        onClick={onClose}
+      />
+      <div className="relative z-10 flex max-h-[min(85vh,640px)] w-full max-w-md flex-col rounded-2xl bg-white shadow-xl">
+        <div className="flex shrink-0 items-center justify-between border-b border-border-soft px-5 py-4">
+          <h2 id="account-modal-title" className="pr-2 text-lg font-semibold tracking-[-0.01em] text-foreground">
+            {group.title}
+          </h2>
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-foreground/70 hover:bg-black/5"
+            aria-label="닫기"
+          >
+            <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M7 7 17 17M17 7 7 17" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+            </svg>
+          </button>
+        </div>
+        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5">
+          <div className="space-y-8">
+            {group.entries.map((info) => (
+              <article key={`${group.title}-${info.name}-${info.account}`}>
+                <div className="flex items-start justify-between gap-2">
+                  <div className="pr-3">
+                    <p className="mt-1 text-base text-foreground">{info.name}</p>
+                    <p className="text-base leading-8 text-foreground">
+                      {info.bank} {info.account}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => onCopy(info.account)}
+                    className="mt-1 shrink-0 rounded-full bg-black/80 px-3 py-2 text-sm font-medium text-white transition-opacity duration-200 hover:opacity-90"
+                  >
+                    {copiedAccount === info.account ? "복사됨" : "복사하기"}
+                  </button>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function NavIcon({ icon }: { icon: (typeof sectionNavItems)[number]["icon"] }) {
   const commonProps = {
@@ -231,6 +767,9 @@ export default function Home() {
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [selectedMoment, setSelectedMoment] = useState<(typeof galleryMoments)[number] | null>(null);
   const [copiedAccount, setCopiedAccount] = useState<string | null>(null);
+  const [rsvpPromoOpen, setRsvpPromoOpen] = useState(false);
+  const [rsvpFormOpen, setRsvpFormOpen] = useState(false);
+  const [accountModalGroup, setAccountModalGroup] = useState<AccountGroup | null>(null);
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -247,19 +786,43 @@ export default function Home() {
 
   useEffect(() => {
     if (showIntro) {
+      return;
+    }
+    let cancelled = false;
+    const timer = window.setTimeout(() => {
+      if (cancelled) return;
+      try {
+        const until = localStorage.getItem(RSVP_PROMO_DISMISS_KEY);
+        const today = new Date().toISOString().slice(0, 10);
+        if (until === today) return;
+      } catch {
+        /* ignore */
+      }
+      setRsvpPromoOpen(true);
+    }, 480);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [showIntro]);
+
+  useEffect(() => {
+    if (showIntro) {
       document.body.style.overflow = "hidden";
       return;
     }
 
-    if (!selectedMoment) {
+    if (!selectedMoment && !rsvpPromoOpen && !rsvpFormOpen && !accountModalGroup) {
       document.body.style.overflow = "";
       return;
     }
 
     const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setSelectedMoment(null);
-      }
+      if (event.key !== "Escape") return;
+      if (rsvpFormOpen) setRsvpFormOpen(false);
+      else if (rsvpPromoOpen) setRsvpPromoOpen(false);
+      else if (accountModalGroup) setAccountModalGroup(null);
+      else setSelectedMoment(null);
     };
 
     document.body.style.overflow = "hidden";
@@ -269,79 +832,17 @@ export default function Home() {
       document.body.style.overflow = "";
       window.removeEventListener("keydown", handleEscape);
     };
-  }, [selectedMoment, showIntro]);
+  }, [showIntro, selectedMoment, rsvpPromoOpen, rsvpFormOpen, accountModalGroup]);
 
-  /** 긴 섹션: 휠 다운 시 끝에 맞춘 뒤 한 번 더 내려야 다음 섹션 상단으로 이동 (터치·모션 축소 시 비활성) */
-  useEffect(() => {
-    const wrapper = document.getElementById("scroll-sections-wrapper");
-    if (!wrapper) return;
+  const dismissRsvpPromoToday = () => {
+    try {
+      localStorage.setItem(RSVP_PROMO_DISMISS_KEY, new Date().toISOString().slice(0, 10));
+    } catch {
+      /* ignore */
+    }
+    setRsvpPromoOpen(false);
+  };
 
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const coarse = window.matchMedia("(pointer: coarse)");
-    if (reduced.matches || coarse.matches) return;
-
-    const getSections = () =>
-      Array.from(wrapper.querySelectorAll<HTMLElement>(":scope > section"));
-
-    const docTop = (el: HTMLElement) => el.getBoundingClientRect().top + window.scrollY;
-
-    let armedIndex: number | null = null;
-
-    const onWheel = (e: WheelEvent) => {
-      if (showIntro || selectedMoment) {
-        armedIndex = null;
-        return;
-      }
-      if (e.deltaY <= 0) {
-        armedIndex = null;
-        return;
-      }
-
-      const secs = getSections();
-      if (secs.length < 2) return;
-
-      const vh = window.innerHeight;
-      const scrollY = window.scrollY;
-
-      let current = -1;
-      for (let i = 0; i < secs.length; i++) {
-        if (docTop(secs[i]) <= scrollY + 2) current = i;
-      }
-      if (current < 0 || current >= secs.length - 1) {
-        armedIndex = null;
-        return;
-      }
-
-      const el = secs[current];
-      const top = docTop(el);
-      const h = el.offsetHeight;
-      const scrollRoom = h - vh;
-      if (scrollRoom <= 80) {
-        armedIndex = null;
-        return;
-      }
-
-      const scrolledIn = scrollY - top;
-      const atEnd = scrolledIn >= scrollRoom - 20;
-      if (!atEnd) {
-        armedIndex = null;
-        return;
-      }
-
-      if (armedIndex === current) {
-        e.preventDefault();
-        secs[current + 1].scrollIntoView({ behavior: "smooth", block: "start" });
-        armedIndex = null;
-      } else {
-        e.preventDefault();
-        window.scrollTo({ top: top + scrollRoom, behavior: "smooth" });
-        armedIndex = current;
-      }
-    };
-
-    window.addEventListener("wheel", onWheel, { passive: false });
-    return () => window.removeEventListener("wheel", onWheel);
-  }, [showIntro, selectedMoment]);
 
   const handleCopyAccount = async (account: string) => {
     try {
@@ -359,6 +860,19 @@ export default function Home() {
     <>
       {showIntro ? <IntroOverlay isLeaving={isLeavingIntro} /> : null}
       <GalleryModal moment={selectedMoment} onClose={() => setSelectedMoment(null)} />
+      <RsvpPromoSheet
+        open={rsvpPromoOpen}
+        onClose={() => setRsvpPromoOpen(false)}
+        onDismissToday={dismissRsvpPromoToday}
+        onOpenForm={() => setRsvpFormOpen(true)}
+      />
+      <RsvpFormModal open={rsvpFormOpen} onClose={() => setRsvpFormOpen(false)} />
+      <AccountGroupModal
+        group={accountModalGroup}
+        onClose={() => setAccountModalGroup(null)}
+        copiedAccount={copiedAccount}
+        onCopy={(account) => void handleCopyAccount(account)}
+      />
 
       <nav
         className="fixed bottom-6 right-3 z-40"
@@ -495,23 +1009,6 @@ export default function Home() {
           {/* 갤러리 */}
           <section id="gallery" className="scroll-snap-section py-10 sm:py-14">
 
-            {/* 1*2 */}
-            <div className="relative left-1/2 right-1/2 mb-8 w-screen max-w-none -translate-x-1/2 lg:static lg:mx-auto lg:w-full lg:max-w-lg lg:translate-x-0">
-              <div className="relative aspect-[8/12] w-full overflow-hidden">
-                <Image
-                  src="/KakaoTalk_20260301_000807942_09.jpg"
-                  alt="웨딩 갤러리 대형 이미지"
-                  fill
-                  priority={false}
-                  sizes="(min-width: 1024px) 32rem, 100vw"
-                  className="object-cover"
-                />
-              </div>
-            </div>
-
-
-
-
             {/* 3*4 */}
             <div className="mx-[-20px] mt-7 overflow-hidden sm:mx-[-28px]">
               <div className="grid grid-cols-3 gap-0">
@@ -553,10 +1050,10 @@ export default function Home() {
             </div>
 
             <div className="my-6 text-center">
-              <p className="font-display text-lg">2026년 6월 20일 토요일 오후 1시 40분</p>
+              <p className="font-display text-base">2026년 6월 20일 토요일 오후 1시 40분</p>
             </div>
 
-            <div className="grid grid-cols-7 gap-2 text-center text-xs text-text-secondary">
+            <div className="grid grid-cols-7 gap-1 text-center text-xs text-text-secondary max-w-[300px] mx-auto">
               {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
                 <span key={day} className="py-1">
                   {day}
@@ -585,7 +1082,16 @@ export default function Home() {
               })}
             </div>
 
-
+            <div className="mt-6 flex justify-center px-2">
+              <button
+                type="button"
+                onClick={downloadWeddingIcs}
+                aria-label="휴대폰 캘린더에 결혼식 일정 추가"
+                className="w-full max-w-[300px] rounded-full border border-black bg-white px-4 py-3 text-center text-sm font-medium tracking-wide text-ink-accent transition-transform duration-200 hover:-translate-y-0.5 active:scale-[0.98]"
+              >
+                캘린더에 등록
+              </button>
+            </div>
           </section>
 
 
@@ -604,23 +1110,55 @@ export default function Home() {
 
             <div className="overflow-hidden bg-white">
               <Image
-                src="/way.jpg"
+                src="/yakdo.png"
                 alt="아이벡스컨벤션 안내 이미지"
-                width={767}
-                height={1522}
-                sizes="(max-width: 640px) 92vw, (max-width: 1024px) 80vw, 560px"
-                className="h-auto w-full"
+                width={320}
+                height={54}
+                className="mx-auto h-auto w-full max-w-[300px]"
               />
+
+              <div className="mx-auto mt-6 w-full max-w-[300px] px-1 pb-2 text-center text-[13px] font-normal leading-[1.45] tracking-[-0.01em] text-foreground sm:text-sm sm:leading-[1.5]">
+                <p className="font-medium text-[#2c2c2c]">아이벡스컨벤션</p>
+                <p className="mt-1.5 text-text-secondary">
+                  경기 광명시 양지로 17
+                  <br />
+                  AK 플라자 광명 5층
+                </p>
+                <p className="mt-1.5">
+                  <a href="tel:02-897-1002" className="text-ink-accent underline-offset-2 hover:underline">
+                    TEL 02-897-1002
+                  </a>
+                </p>
+
+                <div className="mt-5 space-y-4 sm:mt-6">
+                  <div className="space-y-1">
+                    <NoticeSectionHeading>자가용</NoticeSectionHeading>
+                    <p>- 네비게이션 : &apos;아이벡스컨벤션&apos; 또는 &apos;AK플라자 광명&apos;</p>
+                    <p>- 주차장 : AK 플라자 B3-B8, 주차 2시간 무료</p>
+                  </div>
+                  <div className="space-y-1">
+                    <NoticeSectionHeading>지하철 / KTX</NoticeSectionHeading>
+                    <p>- 1호선 광명역 : 1번, 3번출구 도보 5분</p>
+                    <p>
+                      - 1호선 관악역 : 1번출구 &gt; 마을버스 1-1 승차 &gt; <br />광명역데시앙.일직동행정복지센터 하차
+                    </p>
+                    <p>- KTX : 서울역, 용산역에서 KTX광명역까지 15분 소요</p>
+                  </div>
+                  <div className="space-y-1">
+                    <NoticeSectionHeading>버스</NoticeSectionHeading>
+                    <p>- 광역버스 8507 <br />(사당역 4번출구 ↔ KTX광명역3번출구)</p>
+                  </div>
+                </div>
+              </div>
             </div>
 
 
-
-            <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3 justify-items-center">
               <a
                 href="https://map.kakao.com/link/search/%EC%95%84%EC%9D%B4%EB%B2%A1%EC%8A%A4%EC%BB%A8%EB%B2%A4%EC%85%98"
                 target="_blank"
                 rel="noreferrer"
-                className="rounded-full border border-black px-4 py-3 text-center text-xs tracking-[0.2em] text-ink-accent uppercase transition-transform duration-200 hover:-translate-y-0.5"
+                className="w-full max-w-[280px] rounded-full border border-black px-4 py-3 text-center text-xs tracking-[0.2em] text-ink-accent uppercase transition-transform duration-200 hover:-translate-y-0.5"
               >
                 Kakao Map
               </a>
@@ -628,7 +1166,7 @@ export default function Home() {
                 href="https://map.naver.com/p/search/%EC%95%84%EC%9D%B4%EB%B2%A1%EC%8A%A4%EC%BB%A8%EB%B2%A4%EC%85%98"
                 target="_blank"
                 rel="noreferrer"
-                className="rounded-full border border-black px-4 py-3 text-center text-xs tracking-[0.2em] text-ink-accent uppercase transition-transform duration-200 hover:-translate-y-0.5"
+                className="w-full max-w-[280px] rounded-full border border-black px-4 py-3 text-center text-xs tracking-[0.2em] text-ink-accent uppercase transition-transform duration-200 hover:-translate-y-0.5"
               >
                 Naver Map
               </a>
@@ -638,7 +1176,7 @@ export default function Home() {
 
 
           <section id="notice" className="scroll-snap-section py-10 sm:py-14">
-            <div className="mb-5 flex justify-center">
+            <div className="flex justify-center">
               <Image
                 src="/notice.png"
                 alt="안내사항"
@@ -648,20 +1186,20 @@ export default function Home() {
               />
             </div>
 
-            <div className="relative mx-auto w-full max-w-sm overflow-hidden rounded-sm bg-[#f8f4f4] px-4 py-9 text-center text-[#383838] film-grain sm:max-w-md sm:px-6 sm:py-10">
+            <div className="relative mx-auto w-full max-w-sm overflow-hidden rounded-sm px-4 text-center text-[#383838] film-grain sm:max-w-md sm:px-6 sm:py-10">
               <p className="text-[15px] font-medium tracking-tight sm:text-base">[주차관련안내]</p>
-              <div className="mt-7 space-y-6 text-[13px] font-normal leading-[1.75] tracking-[-0.01em] sm:mt-8 sm:text-sm sm:leading-[1.8]">
-                <div className="space-y-2">
+              <div className="mt-2 space-y-4 text-[13px] font-normal leading-[1.45] tracking-[-0.01em] sm:mt-6 sm:text-sm sm:leading-[1.5]">
+                <div className="space-y-1">
                   <NoticeSectionHeading>주차안내</NoticeSectionHeading>
                   <p>- 지하 5~6층 주차해야 편해요</p>
-                  <p>- 기둥에 &apos;IVEX&apos; 표시된 구역에 주차하시면 엘리베이터 이용이 편리합니다</p>
+                  <p>- 기둥에 &apos;IVEX&apos; 표시된 구역에 주차하시면 <br />엘리베이터 이용이 편리합니다</p>
                 </div>
                 <p className="font-medium text-[#2c2c2c]">
                   층마다 노란조끼를 입은 아이벡스
                   <br />
                   안내요원이 계시니 편하게 물어봐주세요
                 </p>
-                <div className="space-y-2">
+                <div className="space-y-1">
                   <NoticeSectionHeading>주차 정산 안내</NoticeSectionHeading>
                   <p>2시간 무료, 웨딩홀 로비 웰컴드링크존 노트북으로 셀프정산</p>
                 </div>
@@ -671,39 +1209,23 @@ export default function Home() {
 
 
           <section id="account" className="scroll-snap-section py-10 sm:py-14">
-            <p className=" text-[1.65rem] text-text-secondary">마음전할곳</p>
+            <p className=" text-[1.65rem] text-text-secondary text-center">마음전할곳</p>
 
-            <div className="mt-6 space-y-10">
-              {accountGroups.map((group) => (
-                <div key={group.title}>
-                  <div className="border-b border-foreground/80 pb-3">
-                    <p className="text-lg font-semibold tracking-[-0.01em] text-foreground">{group.title}</p>
-                  </div>
-
-                  <div className="space-y-8 pt-6">
-                    {group.entries.map((info) => (
-                      <article key={`${group.title}-${info.name}-${info.account}`}>
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="pr-3">
-                            <p className="mt-1 text-base text-foreground">{info.name}</p>
-                            <p className="text-base leading-8 text-foreground">
-                              {info.bank} {info.account}
-                            </p>
-                          </div>
-
-                          <button
-                            type="button"
-                            onClick={() => void handleCopyAccount(info.account)}
-                            className="mt-1 shrink-0 rounded-full bg-black/80 px-3 py-2 text-sm font-medium text-white transition-opacity duration-200 hover:opacity-90"
-                          >
-                            {copiedAccount === info.account ? "복사됨" : "복사하기"}
-                          </button>
-                        </div>
-                      </article>
-                    ))}
-                  </div>
-                </div>
-              ))}
+            <div className="mt-6 flex flex-col items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setAccountModalGroup(accountGroups[0])}
+                className="w-full max-w-[300px] rounded-full border border-black bg-white px-4 py-3 text-center text-sm font-medium tracking-wide text-ink-accent transition-transform duration-200 hover:-translate-y-0.5 active:scale-[0.98]"
+              >
+                신랑 측 계좌번호
+              </button>
+              <button
+                type="button"
+                onClick={() => setAccountModalGroup(accountGroups[1])}
+                className="w-full max-w-[300px] rounded-full border border-black bg-white px-4 py-3 text-center text-sm font-medium tracking-wide text-ink-accent transition-transform duration-200 hover:-translate-y-0.5 active:scale-[0.98]"
+              >
+                신부 측 계좌번호
+              </button>
             </div>
           </section>
 
@@ -721,73 +1243,27 @@ export default function Home() {
               />
             </div>
 
-            <div className="mt-7 rounded-[28px] border border-black px-5 py-7 text-left">
-              <p className="font-display text-2xl text-center">참석의사전달</p>
-              <p className="mt-2 text-center text-sm leading-6 text-text-secondary">
-                참석 여부를 남겨주시면
-
-                준비에 많은 도움이 됩니다.
-              </p>
-
-              <div className="mt-6 space-y-4">
-                <div>
-                  <label className="mb-2 block text-sm text-text-secondary">성함</label>
-                  <div className="rounded-2xl border border-black px-4 py-3 text-sm text-text-secondary">
-                    이름을 입력해주세요
-                  </div>
-                </div>
-
-                <div>
-                  <label className="mb-2 block text-sm text-text-secondary">참석 여부</label>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="rounded-2xl border border-black px-4 py-3 text-center text-sm text-text-secondary">
-                      참석
-                    </div>
-                    <div className="rounded-2xl border border-black px-4 py-3 text-center text-sm text-text-secondary">
-                      불참
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="mb-2 block text-sm text-text-secondary">동행 인원</label>
-                  <div className="rounded-2xl border border-black px-4 py-3 text-sm text-text-secondary">
-                    동행 인원을 선택해주세요
-                  </div>
-                </div>
-
-                <div>
-                  <label className="mb-2 block text-sm text-text-secondary">전달 말씀</label>
-                  <div className="min-h-28 rounded-2xl border border-black px-4 py-3 text-sm text-text-secondary">
-                    축하 메시지를 남겨주세요
-                  </div>
-                </div>
-              </div>
-
+            <div className="mt-4 rounded-2xl bg-border-soft/35 px-5 py-8 sm:px-7 sm:py-9">
+              <p className="text-center text-sm text-text-secondary">참석의사 전달</p>
+              <RsvpIntroCopy className="mt-4" />
               <button
                 type="button"
-                className="mt-5 w-full rounded-full border border-black px-6 py-3 text-sm tracking-[0.18em] text-ink-accent transition-transform duration-200 hover:-translate-y-0.5"
+                onClick={() => setRsvpFormOpen(true)}
+                className="mt-7 w-full rounded-2xl bg-accent-rose px-4 py-3.5 text-center text-sm font-semibold text-white transition-opacity hover:opacity-92 active:opacity-88"
               >
-                RSVP soon
+                참석 의사 전달
               </button>
             </div>
 
-            <div className="mt-5 rounded-[28px] border-2 border-dashed border-black px-5 py-7">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border border-black text-2xl text-ink-accent">
-                +
-              </div>
+            <div className="mt-5 rounded-[28px] border border-black px-5 py-7">
+
               <p className="mt-4 font-display text-2xl">Photo Upload</p>
               <p className="mt-2 text-sm leading-6 text-text-secondary">
-                사진 업로드 기능은 이후 연동 예정입니다.
-                <br />
-                지금은 안내 영역으로 먼저 디자인해두었습니다.
+                소중한 추억을 함께 나누어요
               </p>
-              <button
-                type="button"
-                className="mt-5 rounded-full border border-black px-6 py-3 text-sm tracking-[0.18em] text-ink-accent uppercase transition-transform duration-200 hover:-translate-y-0.5"
-              >
-                Upload soon
-              </button>
+              <div className="mt-5 flex justify-center">
+                <GuestPhotoUploader />
+              </div>
             </div>
           </section>
         </div>

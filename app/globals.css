@@ -23,9 +23,8 @@
   --font-sans:
     "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Apple SD Gothic Neo", "Malgun Gothic",
     "Segoe UI", sans-serif;
-  --font-display:
-    "Baskerville", "Times New Roman", "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", ui-serif, serif;
-  --font-script: "Snell Roundhand", "Segoe Script", "Brush Script MT", cursive;
+  --font-display: var(--font-sans);
+  --font-script: var(--font-sans);
 }
 
 * {
@@ -67,7 +66,7 @@ button {
 }
 
 .font-script {
-  font-family: "Snell Roundhand", "Segoe Script", "Brush Script MT", cursive;
+  font-family: var(--font-sans);
 }
 
 .paper-texture {

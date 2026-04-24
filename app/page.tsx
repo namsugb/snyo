@@ -1007,10 +1007,17 @@ export default function Home() {
 
 
           {/* 갤러리 */}
-          <section id="gallery" className="scroll-snap-section py-10 sm:py-14">
+          <section id="gallery" className="scroll-snap-section py-10 sm:py-14 bg-white">
+            <Image
+              src="/wewe2.png"
+              alt="갤러리"
+              width={320}
+              height={54}
+              className="mx-auto h-auto w-full max-w-[240px] bg-white -mb-16 -mt-16"
+            />
 
             {/* 3*4 */}
-            <div className="mx-[-20px] mt-7 overflow-hidden sm:mx-[-28px]">
+            <div className="mx-[-20px] overflow-hidden sm:mx-[-28px]">
               <div className="grid grid-cols-3 gap-0">
                 {galleryMoments.map((moment) => (
                   <button
@@ -1040,7 +1047,7 @@ export default function Home() {
           <section id="day" className="scroll-snap-section py-10 sm:py-14">
             <div className="mb-5 flex justify-center">
               <Image
-                src="/calendar.png"
+                src="/calendar3.png"
                 alt="Wedding calendar illustration"
                 width={320}
                 height={170}
@@ -1100,12 +1107,14 @@ export default function Home() {
           <section id="place" className="scroll-snap-section py-10 sm:py-14">
             <div className="flex justify-center">
               <Image
-                src="/map.png"
+                src="/map3.png"
                 alt="오시는 길"
                 width={1425}
                 height={1104}
-                className="h-auto w-24 bg-white sm:w-28 -mb-6 z-10"
+                className="h-auto w-22 bg-white sm:w-28 -mb-6 z-10 scale-y-[-1]"
+                style={{ transform: 'scaleY(-1)' }}
               />
+
             </div>
 
             <div className="overflow-hidden bg-white">
@@ -1153,7 +1162,7 @@ export default function Home() {
             </div>
 
 
-            <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3 justify-items-center">
+            <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3 justify-items-center md:grid-cols-1">
               <a
                 href="https://map.kakao.com/link/search/%EC%95%84%EC%9D%B4%EB%B2%A1%EC%8A%A4%EC%BB%A8%EB%B2%A4%EC%85%98"
                 target="_blank"
@@ -1182,7 +1191,7 @@ export default function Home() {
                 alt="안내사항"
                 width={1448}
                 height={1086}
-                className="h-auto w-24 bg-white sm:w-28"
+                className="h-auto w-32 bg-white sm:w-32 -mr-6"
               />
             </div>
 

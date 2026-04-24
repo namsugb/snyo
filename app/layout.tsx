@@ -2,10 +2,7 @@ import type { Metadata } from "next";
 import "pretendard/dist/web/static/pretendard-dynamic-subset.css";
 import "./globals.css";
 
-const metadataBase = new URL(
-  process.env.NEXT_PUBLIC_SITE_URL ??
-  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000"),
-);
+const metadataBase = new URL("https://snyo.vercel.app");
 
 export const metadata: Metadata = {
   metadataBase,

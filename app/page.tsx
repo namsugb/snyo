@@ -1082,9 +1082,7 @@ export default function Home() {
                 캘린더에 등록
               </button>
               <p className="max-w-[300px] text-center text-[11px] leading-relaxed text-text-secondary">
-                iPhone에서는 새 탭에서 일정이 열릴 수 있어요. 미리보기에서 <strong className="font-medium text-foreground">왼쪽 아래 공유</strong>
-                를 누른 뒤 <strong className="font-medium text-foreground">캘린더에 추가</strong>를 선택해 주세요. (완료는
-                창만 닫습니다.)
+                (카카오톡이 아닌 외부 브라우저에서 사용 가능합니다.)
               </p>
             </div>
           </section>

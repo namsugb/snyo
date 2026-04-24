@@ -15,7 +15,7 @@ export function buildWeddingIcs(): string {
     "UID:snyo-wedding-20260620@snyo.local",
     `DTSTAMP:${dtStamp}`,
     "DTSTART:20260620T044000Z",
-    "DTEND:20260620T074000Z",
+    "DTEND:20260620T054000Z",
     `SUMMARY:${summary}`,
     `DESCRIPTION:${description}`,
     `LOCATION:${location}`,

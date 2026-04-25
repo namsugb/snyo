@@ -14,18 +14,21 @@ import {
 } from "react";
 
 const galleryMoments = [
-  { title: "First hello", src: "/KakaoTalk_20260301_000807942.jpg", rotate: "-rotate-[1.8deg]" },
-  { title: "Our season", src: "/KakaoTalk_20260301_000807942_01.jpg", rotate: "rotate-[1.6deg]" },
-  { title: "Promise", src: "/KakaoTalk_20260301_000807942_02.jpg", rotate: "-rotate-[1.4deg]" },
-  { title: "Bloom", src: "/KakaoTalk_20260301_000807942_03.jpg", rotate: "rotate-[2deg]" },
-  { title: "Letters", src: "/KakaoTalk_20260301_000807942_04.jpg", rotate: "-rotate-[1deg]" },
-  { title: "Picnic", src: "/KakaoTalk_20260301_000807942_05.jpg", rotate: "rotate-[0.8deg]" },
-  { title: "Evening", src: "/KakaoTalk_20260301_000807942_06.jpg", rotate: "-rotate-[1.8deg]" },
-  { title: "Smile", src: "/KakaoTalk_20260301_000807942_07.jpg", rotate: "rotate-[1.3deg]" },
-  { title: "Forever", src: "/KakaoTalk_20260301_000807942_08.jpg", rotate: "-rotate-[1.5deg]" },
-  { title: "Soft breeze", src: "/KakaoTalk_20260301_000807942_09.jpg", rotate: "rotate-[1.2deg]" },
-  { title: "Daylight", src: "/KakaoTalk_20260301_000807942_10.jpg", rotate: "-rotate-[1.2deg]" },
-  { title: "Night vow", src: "/KakaoTalk_20260301_000807942_11.jpg", rotate: "rotate-[1deg]" },
+  { title: "Gallery 01", src: "/gallery/g1.jpeg", rotate: "-rotate-[1.8deg]" },
+  { title: "Gallery 02", src: "/gallery/g2.jpeg", rotate: "rotate-[1.6deg]" },
+  { title: "Gallery 03", src: "/gallery/g3.jpeg", rotate: "-rotate-[1.4deg]" },
+  { title: "Gallery 04", src: "/gallery/g4.jpeg", rotate: "rotate-[2deg]" },
+  { title: "Gallery 05", src: "/gallery/g5.jpeg", rotate: "-rotate-[1deg]" },
+  { title: "Gallery 06", src: "/gallery/g6.jpeg", rotate: "rotate-[0.8deg]" },
+  { title: "Gallery 07", src: "/gallery/g7.jpeg", rotate: "-rotate-[1.8deg]" },
+  { title: "Gallery 08", src: "/gallery/g8.jpeg", rotate: "rotate-[1.3deg]" },
+  { title: "Gallery 09", src: "/gallery/g9.jpeg", rotate: "-rotate-[1.5deg]" },
+  { title: "Gallery 10", src: "/gallery/g10.jpeg", rotate: "rotate-[1.2deg]" },
+  { title: "Gallery 11", src: "/gallery/g11.JPG", rotate: "-rotate-[1.2deg]" },
+  { title: "Gallery 12", src: "/gallery/g12.jpeg", rotate: "rotate-[1deg]" },
+  { title: "Gallery 13", src: "/gallery/g13.jpeg", rotate: "-rotate-[1.6deg]" },
+  { title: "Gallery 14", src: "/gallery/g14.jpeg", rotate: "rotate-[1.1deg]" },
+  { title: "Gallery 15", src: "/gallery/g15.jpeg", rotate: "-rotate-[1.1deg]" },
 ];
 
 const accountGroups = [
@@ -42,7 +45,6 @@ const accountGroups = [
     entries: [
       { name: "남승효", bank: "국민은행", account: "246602 04 327707" },
       { name: "남유행", bank: "농협은행", account: "351 0573 5575 43" },
-      { name: "김은실", bank: "농협은행", account: "351 0573 5575 43" },
 
     ],
   },
@@ -82,11 +84,11 @@ const WEDDING_RSVP_DETAILS = {
 function RsvpIntroCopy({ className = "" }: { className?: string }) {
   return (
     <p className={`text-center text-sm leading-relaxed text-foreground ${className}`}>
-      축하의 마음으로 참석해 주실
+      전세버스 탑승 여부를
       <br />
-      모든 분을 정중히 모시고자 하오니,
+      미리 확인하고자 하오니,
       <br />
-      참석 여부를 알려주시면 감사하겠습니다.
+      아래 정보를 남겨주시면 감사하겠습니다.
     </p>
   );
 }
@@ -152,10 +154,10 @@ function RsvpPromoSheet({
           </svg>
         </button>
         <h2 id="rsvp-promo-title" className="text-center text-lg font-semibold text-foreground">
-          참석의사 전달
+          전세버스 탑승 여부
         </h2>
         <RsvpIntroCopy className="mt-4" />
-        <RsvpEventDetails className="mt-5" />
+      
         <button
           type="button"
           onClick={() => {
@@ -164,7 +166,7 @@ function RsvpPromoSheet({
           }}
           className="mt-7 w-full rounded-2xl bg-accent-rose px-4 py-3.5 text-center text-sm font-semibold text-white transition-opacity hover:opacity-92 active:opacity-88"
         >
-          참석 의사 전달
+          전세버스 탑승 여부
         </button>
       </div>
       <div className="relative z-10 flex justify-end gap-2 px-5 py-3 text-xs">
@@ -194,10 +196,9 @@ function RsvpFormModal({ open, onClose }: { open: boolean; onClose: () => void }
   const privacyDetailsId = useId();
   const [isPending, startTransition] = useTransition();
   const [formError, setFormError] = useState<string | null>(null);
-  const [side, setSide] = useState<"groom" | "bride">("bride");
   const [name, setName] = useState("");
   const [headcount, setHeadcount] = useState("");
-  const [meal, setMeal] = useState<"planned" | "no" | "undecided" | null>(null);
+  const [boardingPlace, setBoardingPlace] = useState<"고흥" | "순천" | null>(null);
   const [privacyOpen, setPrivacyOpen] = useState(false);
   const [privacyAgreed, setPrivacyAgreed] = useState(false);
 
@@ -205,10 +206,9 @@ function RsvpFormModal({ open, onClose }: { open: boolean; onClose: () => void }
     if (!open) {
       return;
     }
-    setSide("bride");
     setName("");
     setHeadcount("");
-    setMeal(null);
+    setBoardingPlace(null);
     setPrivacyOpen(false);
     setPrivacyAgreed(false);
     setFormError(null);
@@ -228,11 +228,11 @@ function RsvpFormModal({ open, onClose }: { open: boolean; onClose: () => void }
       return;
     }
     if (!Number.isFinite(count) || count < 1) {
-      window.alert("참석인원(본인 포함 총 인원)을 숫자로 입력해 주세요.");
+      window.alert("탑승인원(본인 포함 총 인원)을 숫자로 입력해 주세요.");
       return;
     }
-    if (meal === null) {
-      window.alert("식사여부를 선택해 주세요.");
+    if (boardingPlace === null) {
+      window.alert("탑승장소(고흥/순천)를 선택해 주세요.");
       return;
     }
     if (!privacyAgreed) {
@@ -243,10 +243,9 @@ function RsvpFormModal({ open, onClose }: { open: boolean; onClose: () => void }
     startTransition(() => {
       void (async () => {
         const result = await submitWeddingRsvp({
-          side,
           guestName: n,
           headcount: count,
-          meal,
+          boardingPlace,
         });
         if (!result.ok) {
           setFormError(result.error);
@@ -274,7 +273,7 @@ function RsvpFormModal({ open, onClose }: { open: boolean; onClose: () => void }
       <div className="relative z-10 flex max-h-[min(90vh,720px)] w-full max-w-md flex-col rounded-t-2xl bg-white shadow-[0_-12px_48px_rgba(0,0,0,0.18)] sm:max-h-[85vh] sm:rounded-2xl sm:shadow-xl">
         <div className="flex shrink-0 items-center justify-between border-b border-border-soft px-5 py-4">
           <h2 id="rsvp-form-title" className="text-base font-semibold text-foreground">
-            참석 의사 전달
+            전세버스 탑승 여부
           </h2>
           <button
             type="button"
@@ -289,23 +288,6 @@ function RsvpFormModal({ open, onClose }: { open: boolean; onClose: () => void }
         </div>
 
         <form onSubmit={submit} className="min-h-0 flex-1 overflow-y-auto px-5 pb-6 pt-4">
-          <div className="flex border-b border-border-soft">
-            <button
-              type="button"
-              onClick={() => setSide("groom")}
-              className={`min-h-11 flex-1 border-b-2 pb-3 pt-1 text-sm font-medium transition-colors ${side === "groom" ? "border-accent-rose text-foreground" : "border-transparent text-text-secondary"}`}
-            >
-              신랑
-            </button>
-            <button
-              type="button"
-              onClick={() => setSide("bride")}
-              className={`min-h-11 flex-1 border-b-2 pb-3 pt-1 text-sm font-medium transition-colors ${side === "bride" ? "border-accent-rose text-foreground" : "border-transparent text-text-secondary"}`}
-            >
-              신부
-            </button>
-          </div>
-
           <div className="mt-5 space-y-4">
             <div>
               <label htmlFor="rsvp-name" className="mb-2 block text-sm text-foreground">
@@ -316,14 +298,14 @@ function RsvpFormModal({ open, onClose }: { open: boolean; onClose: () => void }
                 id="rsvp-name"
                 value={name}
                 onChange={(ev) => setName(ev.target.value)}
-                placeholder="참석자 성함"
+                placeholder="탑승자 성함"
                 autoComplete="name"
                 className="w-full rounded-2xl border border-black px-4 py-3 text-sm text-foreground outline-none placeholder:text-text-secondary/70 focus:ring-2 focus:ring-accent-rose/35"
               />
             </div>
             <div>
               <label htmlFor="rsvp-headcount" className="mb-2 block text-sm text-foreground">
-                참석인원
+                탑승인원
                 <RequiredMark />
               </label>
               <input
@@ -332,30 +314,24 @@ function RsvpFormModal({ open, onClose }: { open: boolean; onClose: () => void }
                 pattern="[0-9]*"
                 value={headcount}
                 onChange={(ev) => setHeadcount(ev.target.value.replace(/\D/g, ""))}
-                placeholder="본인 포함 총 참석 인원수"
+                placeholder="본인 포함 총 탑승 인원수"
                 className="w-full rounded-2xl border border-black px-4 py-3 text-sm text-foreground outline-none placeholder:text-text-secondary/70 focus:ring-2 focus:ring-accent-rose/35"
               />
             </div>
             <div>
               <span className="mb-2 block text-sm text-foreground">
-                식사여부
+                탑승장소
                 <RequiredMark />
               </span>
-              <div className="grid grid-cols-3 gap-2">
-                {(
-                  [
-                    { key: "planned" as const, label: "예정" },
-                    { key: "no" as const, label: "안함" },
-                    { key: "undecided" as const, label: "미정" },
-                  ] as const
-                ).map(({ key, label }) => (
+              <div className="grid grid-cols-2 gap-2">
+                {(["고흥", "순천"] as const).map((place) => (
                   <button
-                    key={key}
+                    key={place}
                     type="button"
-                    onClick={() => setMeal(key)}
-                    className={`rounded-2xl border px-2 py-3 text-center text-sm transition-colors ${meal === key ? "border-black bg-black text-white" : "border-black text-text-secondary hover:bg-black/3"}`}
+                    onClick={() => setBoardingPlace(place)}
+                    className={`rounded-2xl border px-2 py-3 text-center text-sm transition-colors ${boardingPlace === place ? "border-black bg-black text-white" : "border-black text-text-secondary hover:bg-black/3"}`}
                   >
-                    {label}
+                    {place}
                   </button>
                 ))}
               </div>
@@ -390,11 +366,11 @@ function RsvpFormModal({ open, onClose }: { open: boolean; onClose: () => void }
                 className="border-t border-border-soft px-4 pb-3 pt-2 text-xs leading-relaxed text-text-secondary"
               >
                 <p>
-                  수집 항목: 성명, 참석 인원, 식사 여부
+                  수집 항목: 성명, 탑승 인원, 탑승 장소
                   <br />
-                  이용 목적: 결혼식 참석 안내 및 연락
+                  이용 목적: 전세버스 탑승 안내 및 연락
                   <br />
-                  보유·이용 기간: 결혼식 종료 후 지체 없이 파기합니다. 동의를 거부하실 수 있으나, 거부 시 참석 의사 전달이 제한될 수 있습니다.
+                  보유·이용 기간: 결혼식 종료 후 지체 없이 파기합니다. 동의를 거부하실 수 있으나, 거부 시 전세버스 탑승 여부 전달이 제한될 수 있습니다.
                 </p>
               </div>
             ) : null}
@@ -421,7 +397,7 @@ function RsvpFormModal({ open, onClose }: { open: boolean; onClose: () => void }
             disabled={isPending}
             className="mt-4 w-full rounded-2xl bg-accent-rose px-4 py-3.5 text-sm font-semibold text-white transition-opacity hover:opacity-92 disabled:opacity-55"
           >
-            {isPending ? "전달 중…" : "참석 의사 전달"}
+            {isPending ? "전달 중…" : "전세버스 탑승 여부"}
           </button>
         </form>
       </div>
@@ -959,21 +935,23 @@ export default function Home() {
                 className="h-auto w-24 opacity-90 sm:w-28"
               />
               <div className="mx-auto w-full max-w-xs bg-white px-2 py-8 text-center text-[#333333] sm:px-3 sm:py-10">
-                <p className="text-base font-normal leading-[1.75] tracking-[-0.01em] sm:leading-[1.8]">
-                  함께 보내는 아홉 번째 여름,
-                  <br />
-                  수많은 계절을 함께 걸어온 저희가
-                  <br />
-                  평생을 함께할 약속을 하고자 합니다.
-                </p>
-                <p className="mt-5 text-base font-normal leading-[1.75] tracking-[-0.01em] sm:mt-6 sm:leading-[1.8]">
-                  저희의 새로운 시작에
-                  <br />
-                  따뜻한 발걸음으로 함께해주신다면
-                  <br />
-                  깊은 감사와 기쁨으로 간직하겠습니다.
-                </p>
-                <p className="mt-9 text-base font-normal leading-[1.75] tracking-[-0.01em] sm:mt-10 sm:leading-[1.8]">
+                <div className="mb-7 flex justify-center">
+                  <div className="relative w-full max-w-[300px] overflow-hidden">
+                    <Image
+                      src="/ment.jpeg"
+                      alt="신랑신부 인사 이미지"
+                      width={350}
+                      height={400}
+                      sizes="(max-width: 740px) 98vw, 380px"
+                      className="object-contain"
+                      priority
+                      style={{ maxWidth: "400px", width: "100%", height: "auto" }}
+                    />
+              
+                  </div>
+                </div>
+          
+                <p className="text-base font-normal leading-[1.75] tracking-[-0.01em] sm:mt-10 sm:leading-[1.8]">
                   윤우영 · 이민자의 장남 <span className="font-semibold text-[#2a2a2a]">준영</span>
                   <br />
                   남유행 · 김은실의 장녀 <span className="font-semibold text-[#2a2a2a]">승효</span>
@@ -990,16 +968,16 @@ export default function Home() {
 
 
           {/* 갤러리 */}
-          <section id="gallery" className="scroll-snap-section py-10 sm:py-14 bg-white">
+          <section id="gallery" className="scroll-snap-section bg-white pt-10 pb-0 sm:pt-14 sm:pb-0">
             <Image
               src="/wewe2.png"
               alt="갤러리"
               width={320}
               height={54}
-              className="mx-auto h-auto w-full max-w-[240px] bg-white -mb-16 -mt-16"
+              className="mx-auto h-auto w-full max-w-[240px] bg-white -mb-8 -mt-16"
             />
 
-            {/* 3*4 */}
+            {/* 3*5 */}
             <div className="mx-[-20px] overflow-hidden sm:mx-[-28px]">
               <div className="grid grid-cols-3 gap-0">
                 {galleryMoments.map((moment) => (
@@ -1027,8 +1005,11 @@ export default function Home() {
 
 
           {/* 날짜 */}
-          <section id="day" className="scroll-snap-section py-10 sm:py-14">
-            <div className="mb-5 flex justify-center">
+          <section
+            id="day"
+            className="scroll-snap-section mx-[-20px] bg-pink-100 px-[20px] pt-0 pb-10 sm:mx-[-28px] sm:px-[28px] sm:pt-0 sm:py-14 md:py-14"
+          >
+            <div className="pt-8 flex justify-center">
               <Image
                 src="/calendar3.png"
                 alt="Wedding calendar illustration"
@@ -1039,7 +1020,7 @@ export default function Home() {
               />
             </div>
 
-            <div className="my-6 text-center">
+            <div className="my-4 text-center">
               <p className="font-display text-base">2026년 6월 20일 토요일 오후 1시 40분</p>
             </div>
 
@@ -1077,11 +1058,11 @@ export default function Home() {
                 type="button"
                 onClick={openWeddingCalendar}
                 aria-label="휴대폰 캘린더에 결혼식 일정 추가"
-                className="w-full max-w-[300px] rounded-full border border-black bg-white px-4 py-3 text-center text-sm font-medium tracking-wide text-ink-accent transition-transform duration-200 hover:-translate-y-0.5 active:scale-[0.98]"
+                className="text-black w-full max-w-[300px] rounded-full border border-black px-4 py-3 text-center text-sm font-medium tracking-wide transition-transform duration-200 hover:-translate-y-0.5 active:scale-[0.98]"
               >
                 캘린더에 등록
               </button>
-              <p className="max-w-[300px] text-center text-[11px] leading-relaxed text-text-secondary">
+              <p className="max-w-[300px] text-center text-[11px] leading-relaxed text-black">
                 (카카오톡이 아닌 외부 브라우저에서 사용 가능합니다.)
               </p>
             </div>
@@ -1103,6 +1084,7 @@ export default function Home() {
 
             </div>
 
+              <p className="text-base font-bold text-center mt-8 z-10">오시는 길</p>
             <div className="overflow-hidden bg-white">
               <Image
                 src="/yakdo.png"
@@ -1112,9 +1094,9 @@ export default function Home() {
                 className="mx-auto h-auto w-full max-w-[300px]"
               />
 
-              <div className="mx-auto mt-6 w-full max-w-[300px] px-1 pb-2 text-center text-[13px] font-normal leading-[1.45] tracking-[-0.01em] text-foreground sm:text-sm sm:leading-[1.5]">
+              <div className="mx-auto mt-6 w-full max-w-[300px] px-1 pb-2 text-center text-base font-normal leading-[1.45] tracking-[-0.01em] text-foreground sm:text-base sm:leading-[1.5]">
                 <p className="font-medium text-[#2c2c2c]">아이벡스컨벤션</p>
-                <p className="mt-1.5 text-text-secondary">
+                <p className="mt-1.5">
                   경기 광명시 양지로 17
                   <br />
                   AK 플라자 광명 5층
@@ -1133,11 +1115,10 @@ export default function Home() {
                   </div>
                   <div className="space-y-1">
                     <NoticeSectionHeading>지하철 / KTX</NoticeSectionHeading>
-                    <p>- 1호선 광명역 : 1번, 3번출구 도보 5분</p>
+                    <p>- 1호선 광명역 : 1번 출구 도보 5분</p>
                     <p>
                       - 1호선 관악역 : 1번출구 &gt; 마을버스 1-1 승차 &gt; <br />광명역데시앙.일직동행정복지센터 하차
                     </p>
-                    <p>- KTX : 서울역, 용산역에서 KTX광명역까지 15분 소요</p>
                   </div>
                   <div className="space-y-1">
                     <NoticeSectionHeading>버스</NoticeSectionHeading>
@@ -1148,12 +1129,12 @@ export default function Home() {
             </div>
 
 
-            <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3 justify-items-center md:grid-cols-1">
+            <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-1 justify-items-center md:grid-cols-1">
               <a
                 href="https://map.kakao.com/link/search/%EC%95%84%EC%9D%B4%EB%B2%A1%EC%8A%A4%EC%BB%A8%EB%B2%A4%EC%85%98"
                 target="_blank"
                 rel="noreferrer"
-                className="w-full max-w-[280px] rounded-full border border-black px-4 py-3 text-center text-xs tracking-[0.2em] text-ink-accent uppercase transition-transform duration-200 hover:-translate-y-0.5"
+                className="w-full max-w-[280px] rounded-full border border-black px-4 py-3 text-center text-xs tracking-[0.2em] uppercase transition-transform duration-200 hover:-translate-y-0.5"
               >
                 Kakao Map
               </a>
@@ -1161,7 +1142,7 @@ export default function Home() {
                 href="https://map.naver.com/p/search/%EC%95%84%EC%9D%B4%EB%B2%A1%EC%8A%A4%EC%BB%A8%EB%B2%A4%EC%85%98"
                 target="_blank"
                 rel="noreferrer"
-                className="w-full max-w-[280px] rounded-full border border-black px-4 py-3 text-center text-xs tracking-[0.2em] text-ink-accent uppercase transition-transform duration-200 hover:-translate-y-0.5"
+                className="w-full max-w-[280px] rounded-full border border-black px-4 py-3 text-center text-xs tracking-[0.2em] uppercase transition-transform duration-200 hover:-translate-y-0.5"
               >
                 Naver Map
               </a>
@@ -1170,7 +1151,10 @@ export default function Home() {
 
 
 
-          <section id="notice" className="scroll-snap-section py-10 sm:py-14">
+          <section
+            id="notice"
+            className="scroll-snap-section mx-[-20px] bg-gray-100 px-[20px] py-10 sm:mx-[-28px] sm:px-[28px] sm:py-14"
+          >
             <div className="flex justify-center">
               <Image
                 src="/notice.png"
@@ -1181,15 +1165,15 @@ export default function Home() {
               />
             </div>
 
-            <div className="relative mx-auto w-full max-w-sm overflow-hidden rounded-sm px-4 text-center text-[#383838] film-grain sm:max-w-md sm:px-6 sm:py-10">
-              <p className="text-[15px] font-medium tracking-tight sm:text-base">[주차관련안내]</p>
-              <div className="mt-2 space-y-4 text-[13px] font-normal leading-[1.45] tracking-[-0.01em] sm:mt-6 sm:text-sm sm:leading-[1.5]">
+            <div className="relative mx-auto w-full max-w-sm overflow-hidden rounded-sm text-center text-[#383838] film-grain sm:max-w-md sm:px-6 sm:pt-4">
+              <p className="text-[15px] font-bold tracking-tight sm:text-base">주차관련안내</p>
+              <div className="mt-2 space-y-4 text-[13px] font-normal leading-[1.45] tracking-[-0.01em] sm:mt-6 sm:text-base sm:leading-[1.5]">
                 <div className="space-y-1">
                   <NoticeSectionHeading>주차안내</NoticeSectionHeading>
                   <p>- 지하 5~6층 주차해야 편해요</p>
                   <p>- 기둥에 &apos;IVEX&apos; 표시된 구역에 주차하시면 <br />엘리베이터 이용이 편리합니다</p>
                 </div>
-                <p className="font-medium text-[#2c2c2c]">
+                <p className="font-medium">
                   층마다 노란조끼를 입은 아이벡스
                   <br />
                   안내요원이 계시니 편하게 물어봐주세요
@@ -1204,7 +1188,16 @@ export default function Home() {
 
 
           <section id="account" className="scroll-snap-section py-10 sm:py-14">
-            <p className=" text-[1.65rem] text-text-secondary text-center">마음전할곳</p>
+            <div className="flex justify-center">
+              <Image
+                src="/heart.png"
+                alt="마음 전할 곳"
+                width={320}
+                height={170}
+                className="h-auto w-24 bg-white sm:w-28"
+              />
+            </div>
+            <p className="text-base font-bold text-center mt-2 z-10">마음 전할 곳</p>
 
             <div className="mt-6 flex flex-col items-center gap-3">
               <button
@@ -1239,24 +1232,23 @@ export default function Home() {
             </div>
 
             <div className="mt-4 rounded-2xl bg-border-soft/35 px-5 py-8 sm:px-7 sm:py-9">
-              <p className="text-center text-sm text-text-secondary">참석의사 전달</p>
+              <p className="text-center text-base font-bold">전세버스 탑승 여부</p>
               <RsvpIntroCopy className="mt-4" />
               <button
                 type="button"
                 onClick={() => setRsvpFormOpen(true)}
                 className="mt-7 w-full rounded-2xl bg-accent-rose px-4 py-3.5 text-center text-sm font-semibold text-white transition-opacity hover:opacity-92 active:opacity-88"
               >
-                참석 의사 전달
+                전세버스 탑승 여부
               </button>
             </div>
 
             <div className="mt-5 rounded-[28px] border border-black px-5 py-7">
 
-              <p className="mt-4 font-display text-2xl">Photo Upload</p>
+              <p className="mt-4 font-bold text-base">사진 업로드</p>
               <p className="mt-2 text-sm leading-6 text-text-secondary">
                 소중한 추억을 함께 나누어요
                 <br />
-                <span className="text-xs">사진 여러 장을 한 번에 선택할 수 있어요. (최대 15장, 각 10MB)</span>
               </p>
               <div className="mt-5 flex justify-center">
                 <GuestPhotoUploader />

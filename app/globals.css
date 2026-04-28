@@ -116,17 +116,21 @@ button {
 .intro-motion-frame {
   opacity: 0;
   will-change: opacity;
-  animation-duration: 2.0s;
-  animation-timing-function: ease-in-out;
-  animation-fill-mode: both;
+  animation-duration: 2.5s;
+  /* 세그먼트 끝에서 한쪽 이미지가 덜 남도록 선형 보간 */
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
 }
 
+/* 나중에 그려지는 이미지 2가 위에만 있어 마지막에도 2처럼 보일 수 있음 → 1을 위 레이어로 */
 .intro-motion-frame-one {
   animation-name: intro-frame-one;
+  z-index: 2;
 }
 
 .intro-motion-frame-two {
   animation-name: intro-frame-two;
+  z-index: 1;
 }
 
 .intro-doodle {
@@ -215,49 +219,61 @@ button {
   }
 }
 
+/* 교차 패턴: 1 → 2 → 1 → 2 → 1 (종료 시 반드시 1만 보이도록 4→5번 전환 구간 명시) */
 @keyframes intro-frame-one {
 
   0%,
-  22% {
+  16% {
     opacity: 1;
   }
 
-  26%,
-  47% {
+  20%,
+  36% {
     opacity: 0;
   }
 
-  51%,
+  40%,
+  56% {
+    opacity: 1;
+  }
+
+  60%,
   72% {
-    opacity: 1;
+    opacity: 0;
   }
 
-  76%,
+  /* 마지막 짝: 72~74% 크로스페이드 후 74%~100%는 이미지 1만 */
+  74%,
   100% {
-    opacity: 0;
+    opacity: 1;
   }
 }
 
 @keyframes intro-frame-two {
 
   0%,
-  22% {
+  16% {
     opacity: 0;
   }
 
-  26%,
-  47% {
+  20%,
+  36% {
     opacity: 1;
   }
 
-  51%,
+  40%,
+  56% {
+    opacity: 0;
+  }
+
+  60%,
   72% {
-    opacity: 0;
+    opacity: 1;
   }
 
-  76%,
+  74%,
   100% {
-    opacity: 1;
+    opacity: 0;
   }
 }
 

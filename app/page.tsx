@@ -768,7 +768,7 @@ function IntroOverlay({ isLeaving }: { isLeaving: boolean }) {
       aria-hidden={isLeaving}
     >
       <div className="intro-motion-stage relative h-full w-full overflow-hidden">
-        <div className="absolute inset-[25%]">
+        <div className="absolute inset-[20%]">
           {introAnimationImages.map((image) => (
             <Image
               key={image.src}
@@ -776,7 +776,7 @@ function IntroOverlay({ isLeaving }: { isLeaving: boolean }) {
               alt={image.alt}
               fill
               priority
-              sizes="50vw"
+              sizes="60vw"
               className={`intro-motion-frame object-contain ${image.className}`}
             />
           ))}
@@ -825,8 +825,9 @@ export default function Home() {
   useEffect(() => {
     document.body.style.overflow = "hidden";
 
-    const startFade = window.setTimeout(() => setIsLeavingIntro(true), 3600);
-    const removeIntro = window.setTimeout(() => setShowIntro(false), 2000);
+    /* 인트로 교차 애니메이션 2.5s 종료 후 잠깐 유지 → 퇴장(0.7s) → 언마운트 */
+    const startFade = window.setTimeout(() => setIsLeavingIntro(true), 3000);
+    const removeIntro = window.setTimeout(() => setShowIntro(false), 3600);
 
     return () => {
       window.clearTimeout(startFade);
@@ -1093,21 +1094,12 @@ export default function Home() {
           {/* 날짜 */}
           <section
             id="day"
-            className="scroll-snap-section mx-[-20px] bg-pink-100 px-[20px] pt-0 pb-10 sm:mx-[-28px] sm:px-[28px] sm:pt-0 sm:py-14 md:py-14"
+            className="scroll-snap-section mx-[-20px] bg-[#f6ccd9] px-[20px] pt-10 pb-10 sm:mx-[-28px] sm:px-[28px] sm:pt-0 sm:py-14 md:py-14"
           >
-            <div className="pt-8 flex justify-center">
-              <Image
-                src="/calendar6.png"
-                alt="Wedding calendar illustration"
-                width={320}
-                height={170}
-                className="h-auto w-24 sm:w-28"
-                priority
-              />
-            </div>
 
-            <div className="my-4 text-center">
-              <p className="font-display text-base">2026년 6월 20일 토요일 오후 1시 40분</p>
+
+            <div className="pt-10 pb-4 text-center">
+              <p className="font-display text-base">2026년 6월 20일 토요일 <br />오후 1시 40분</p>
             </div>
 
             <div className="grid grid-cols-7 gap-1 text-center text-xs text-text-secondary max-w-[300px] mx-auto">
@@ -1168,6 +1160,7 @@ export default function Home() {
                 style={{ pointerEvents: "none", userSelect: "none" }}
               />
             </div>
+            <p className="text-[15px] font-bold tracking-tight sm:text-base text-center">오시는 길</p>
 
             <div className="overflow-hidden bg-white">
               <Image
@@ -1194,7 +1187,8 @@ export default function Home() {
                 <div className="mt-5 space-y-4 sm:mt-6">
                   <div className="space-y-1">
                     <NoticeSectionHeading>자가용</NoticeSectionHeading>
-                    <p>- 네비게이션 : &apos;아이벡스컨벤션&apos; 또는 &apos;AK플라자 광명&apos;</p>
+                    <p className="whitespace-nowrap -ml-3">- 네비게이션 : &apos;아이벡스컨벤션&apos; 또는 &apos;AK플라자 광명&apos;</p>
+
                     <p>- 주차장 : AK 플라자 B3-B8, 주차 2시간 무료</p>
                   </div>
                   <div className="space-y-1">
@@ -1213,7 +1207,7 @@ export default function Home() {
             </div>
 
 
-            <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-1 justify-items-center md:grid-cols-1">
+            <div className="mt-3 grid grid-cols-1 gap-1 sm:grid-cols-1 justify-items-center md:grid-cols-1">
               <a
                 href="https://map.kakao.com/link/search/%EC%95%84%EC%9D%B4%EB%B2%A1%EC%8A%A4%EC%BB%A8%EB%B2%A4%EC%85%98"
                 target="_blank"
@@ -1303,20 +1297,21 @@ export default function Home() {
 
 
 
-          <section id="upload" className="scroll-snap-section py-10 text-center sm:py-14">
-            <div className="mt-4 rounded-2xl bg-border-soft/35 px-5 py-8 sm:px-7 sm:py-9">
+          <section id="upload" className="scroll-snap-section pt-10 pb-10 text-center sm:pt-14 sm:pb-14">
+            {/* 주차관련안내 섹션과 동일한 전폭 회색 배경 */}
+            <div className="mx-[-20px] bg-gray-100 px-[20px] py-10 sm:mx-[-28px] sm:px-[28px] sm:py-14">
               <p className="text-center text-base font-bold">전세버스 탑승 여부</p>
               <RsvpIntroCopy className="mt-4" />
               <button
                 type="button"
                 onClick={() => setRsvpFormOpen(true)}
-                className="mt-7 w-full rounded-2xl bg-accent-rose px-4 py-3.5 text-center text-sm font-semibold text-white transition-opacity hover:opacity-92 active:opacity-88"
+                className="mt-7 w-full max-w-md mx-auto rounded-full bg-accent-rose px-4 py-3.5 text-center text-sm font-semibold text-white transition-opacity hover:opacity-92 active:opacity-88"
               >
                 전세버스 탑승 여부
               </button>
             </div>
 
-            <div className="mt-5 rounded-[28px] border border-black px-5 py-7">
+            <div className="mt-5 rounded-[28px] px-5 py-7">
 
               <p className="mt-4 font-bold text-base">사진 업로드</p>
               <p className="mt-2 text-sm leading-6 text-text-secondary">

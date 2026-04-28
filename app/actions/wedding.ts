@@ -6,9 +6,12 @@ import { createServiceRoleClient } from "@/lib/supabase/admin";
 const BOARDING_PLACES = ["고흥", "순천"] as const;
 export type WeddingBusBoardingPlace = (typeof BOARDING_PLACES)[number];
 
+const MAX_COMPANION_SLOTS = 50;
+const MAX_NAME_LENGTH = 120;
+
 export type SubmitWeddingRsvpInput = {
   guestName: string;
-  headcount: number;
+  companionNames: string[];
   boardingPlace: WeddingBusBoardingPlace;
 };
 
@@ -20,19 +23,28 @@ export async function submitWeddingRsvp(
   }
 
   const guestName = input.guestName.trim();
-  if (guestName.length < 1 || guestName.length > 120) {
+  if (guestName.length < 1 || guestName.length > MAX_NAME_LENGTH) {
     return { ok: false, error: "성함을 확인해 주세요." };
   }
 
-  const headcount = Math.floor(Number(input.headcount));
-  if (!Number.isFinite(headcount) || headcount < 1 || headcount > 99) {
-    return { ok: false, error: "탑승 인원을 확인해 주세요." };
+  const companions = input.companionNames
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
+
+  if (companions.length > MAX_COMPANION_SLOTS) {
+    return { ok: false, error: `동승자는 최대 ${MAX_COMPANION_SLOTS}명까지 입력할 수 있습니다.` };
+  }
+
+  for (const name of companions) {
+    if (name.length > MAX_NAME_LENGTH) {
+      return { ok: false, error: "동승자 이름이 너무 깁니다." };
+    }
   }
 
   const supabase = await createClient();
   const { error } = await supabase.from("wedding_rsvps").insert({
     guest_name: guestName,
-    headcount,
+    companion_names: companions,
     boarding_place: input.boardingPlace,
     privacy_agreed: true,
   });

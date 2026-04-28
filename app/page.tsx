@@ -215,7 +215,8 @@ function RsvpFormModal({ open, onClose }: { open: boolean; onClose: () => void }
   const [isPending, startTransition] = useTransition();
   const [formError, setFormError] = useState<string | null>(null);
   const [name, setName] = useState("");
-  const [headcount, setHeadcount] = useState("");
+  /** 추가 동승자 이름 (대표 성함은 상단 성함 필드) */
+  const [companions, setCompanions] = useState<string[]>([""]);
   const [boardingPlace, setBoardingPlace] = useState<"고흥" | "순천" | null>(null);
   const [privacyOpen, setPrivacyOpen] = useState(false);
   const [privacyAgreed, setPrivacyAgreed] = useState(false);
@@ -225,7 +226,7 @@ function RsvpFormModal({ open, onClose }: { open: boolean; onClose: () => void }
       return;
     }
     setName("");
-    setHeadcount("");
+    setCompanions([""]);
     setBoardingPlace(null);
     setPrivacyOpen(false);
     setPrivacyAgreed(false);
@@ -240,13 +241,8 @@ function RsvpFormModal({ open, onClose }: { open: boolean; onClose: () => void }
     e.preventDefault();
     setFormError(null);
     const n = name.trim();
-    const count = Number.parseInt(headcount.trim(), 10);
     if (!n) {
       window.alert("성함을 입력해 주세요.");
-      return;
-    }
-    if (!Number.isFinite(count) || count < 1) {
-      window.alert("탑승인원(본인 포함 총 인원)을 숫자로 입력해 주세요.");
       return;
     }
     if (boardingPlace === null) {
@@ -262,7 +258,7 @@ function RsvpFormModal({ open, onClose }: { open: boolean; onClose: () => void }
       void (async () => {
         const result = await submitWeddingRsvp({
           guestName: n,
-          headcount: count,
+          companionNames: companions,
           boardingPlace,
         });
         if (!result.ok) {
@@ -322,19 +318,47 @@ function RsvpFormModal({ open, onClose }: { open: boolean; onClose: () => void }
               />
             </div>
             <div>
-              <label htmlFor="rsvp-headcount" className="mb-2 block text-sm text-foreground">
-                탑승인원
-                <RequiredMark />
-              </label>
-              <input
-                id="rsvp-headcount"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                value={headcount}
-                onChange={(ev) => setHeadcount(ev.target.value.replace(/\D/g, ""))}
-                placeholder="본인 포함 총 탑승 인원수"
-                className="w-full rounded-2xl border border-black px-4 py-3 text-sm text-foreground outline-none placeholder:text-text-secondary/70 focus:ring-2 focus:ring-accent-rose/35"
-              />
+              <span className="mb-2 block text-sm text-foreground">동승자 명단</span>
+              <p className="mb-3 text-xs leading-relaxed text-text-secondary">
+                추가로 함께 탑승하시는 분이 있으면 이름을 적어 주세요.
+              </p>
+              <div className="space-y-2">
+                {companions.map((companionName, index) => (
+                  <div key={`companion-${index}`} className="flex gap-2">
+                    <input
+                      id={index === 0 ? "rsvp-companion-0" : undefined}
+                      aria-label={`동승자 ${index + 1}`}
+                      value={companionName}
+                      onChange={(ev) => {
+                        const v = ev.target.value;
+                        setCompanions((prev) => prev.map((row, i) => (i === index ? v : row)));
+                      }}
+                      placeholder={index === 0 ? "동승자 이름" : `동승자 ${index + 1}`}
+                      autoComplete="name"
+                      className="min-w-0 flex-1 rounded-2xl border border-black px-4 py-3 text-sm text-foreground outline-none placeholder:text-text-secondary/70 focus:ring-2 focus:ring-accent-rose/35"
+                    />
+                    {companions.length > 1 ? (
+                      <button
+                        type="button"
+                        className="shrink-0 rounded-2xl border border-black px-3 py-2 text-xs text-foreground transition-colors hover:bg-black/5"
+                        onClick={() => {
+                          setCompanions((prev) => prev.filter((_, i) => i !== index));
+                        }}
+                      >
+                        삭제
+                      </button>
+                    ) : null}
+                  </div>
+                ))}
+              </div>
+              <button
+                type="button"
+                disabled={companions.length >= 50}
+                className="mt-3 w-full rounded-2xl border border-dashed border-black py-3 text-sm font-medium text-foreground transition-colors hover:bg-black/5 disabled:cursor-not-allowed disabled:opacity-45"
+                onClick={() => setCompanions((prev) => (prev.length >= 50 ? prev : [...prev, ""]))}
+              >
+                + 동승자 추가
+              </button>
             </div>
             <div>
               <span className="mb-2 block text-sm text-foreground">
@@ -384,7 +408,7 @@ function RsvpFormModal({ open, onClose }: { open: boolean; onClose: () => void }
                 className="border-t border-border-soft px-4 pb-3 pt-2 text-xs leading-relaxed text-text-secondary"
               >
                 <p>
-                  수집 항목: 성명, 탑승 인원, 탑승 장소
+                  수집 항목: 성명, 동승자 명단, 탑승 장소
                   <br />
                   이용 목적: 전세버스 탑승 안내 및 연락
                   <br />

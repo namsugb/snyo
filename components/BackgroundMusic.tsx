@@ -271,12 +271,12 @@ export function BackgroundMusic() {
   ) : null;
 
   return (
-    <div className="fixed bottom-6 left-4 z-[39] flex flex-col items-start">
+    <div className="fixed left-4 top-6 z-[39] flex flex-col items-start">
       {useYoutube ? (
         <div
           key={youtubeId}
           ref={ytContainerRef}
-          className="pointer-events-none fixed bottom-0 left-0 -z-10 h-px w-px overflow-hidden opacity-0"
+          className="pointer-events-none fixed left-0 top-0 -z-10 h-px w-px overflow-hidden opacity-0"
           aria-hidden
         />
       ) : otherUnsupported ? null : useVideo ? (
@@ -291,7 +291,7 @@ export function BackgroundMusic() {
           loop
           muted={false}
           controls={false}
-          className="pointer-events-none fixed bottom-0 left-0 -z-10 h-px w-px overflow-hidden opacity-0"
+          className="pointer-events-none fixed left-0 top-0 -z-10 h-px w-px overflow-hidden opacity-0"
           aria-hidden
           onError={() => {
             setLoadError(true);
@@ -317,7 +317,7 @@ export function BackgroundMusic() {
         type="button"
         onClick={toggle}
         disabled={disabled}
-        className="flex h-11 items-center gap-2 rounded-full bg-white/93 px-4 text-xs font-medium text-ink-accent shadow-[0_8px_24px_rgba(0,0,0,0.08)] backdrop-blur-sm transition-opacity hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-45 sm:text-sm"
+        className="flex h-11 items-center gap-2 rounded-full bg-[#f6ccd9] px-4 text-xs font-medium text-ink-accent shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-opacity hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-45 sm:text-sm"
         aria-pressed={playing}
         aria-label={playing ? "배경음악 끄기" : "배경음악 재생"}
       >

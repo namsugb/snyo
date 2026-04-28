@@ -18,22 +18,43 @@ import {
   type ReactNode,
 } from "react";
 
+/** thumbObjectPosition: grid 썸네일(object-cover) 세로 초점. 위가 잘리면 Y%를 50보다 작게(예: 32~40). */
 const galleryMoments = [
   { title: "Gallery 01", src: "/gallery/g1.jpeg", rotate: "-rotate-[1.8deg]" },
   { title: "Gallery 02", src: "/gallery/g2.jpeg", rotate: "rotate-[1.6deg]" },
   { title: "Gallery 03", src: "/gallery/g3.jpeg", rotate: "-rotate-[1.4deg]" },
   { title: "Gallery 04", src: "/gallery/g4.jpeg", rotate: "rotate-[2deg]" },
   { title: "Gallery 05", src: "/gallery/g5.jpeg", rotate: "-rotate-[1deg]" },
-  { title: "Gallery 06", src: "/gallery/g6.jpeg", rotate: "rotate-[0.8deg]" },
+  {
+    title: "Gallery 06",
+    src: "/gallery/g6.jpeg",
+    rotate: "rotate-[0.8deg]",
+    thumbObjectPosition: "object-[center_38%]",
+  },
   { title: "Gallery 07", src: "/gallery/g7.jpeg", rotate: "-rotate-[1.8deg]" },
-  { title: "Gallery 08", src: "/gallery/g8.jpeg", rotate: "rotate-[1.3deg]" },
-  { title: "Gallery 09", src: "/gallery/g9.jpeg", rotate: "-rotate-[1.5deg]" },
-  { title: "Gallery 10", src: "/gallery/g10.jpeg", rotate: "rotate-[1.2deg]" },
+  {
+    title: "Gallery 08",
+    src: "/gallery/g8.jpeg",
+    rotate: "rotate-[1.3deg]",
+    thumbObjectPosition: "object-[center_33%]",
+  },
+  {
+    title: "Gallery 09",
+    src: "/gallery/g9.jpeg",
+    rotate: "-rotate-[1.5deg]",
+    thumbObjectPosition: "object-[center_30%]",
+  },
+  {
+    title: "Gallery 10",
+    src: "/gallery/g10.jpeg",
+    rotate: "rotate-[1.2deg]",
+    thumbObjectPosition: "object-[center_38%]",
+  },
   { title: "Gallery 11", src: "/gallery/g11.JPG", rotate: "-rotate-[1.2deg]" },
-  { title: "Gallery 12", src: "/gallery/g12.jpeg", rotate: "rotate-[1deg]" },
+  { title: "Gallery 12", src: "/gallery/g12.jpg", rotate: "rotate-[1deg]" },
   { title: "Gallery 13", src: "/gallery/g13.jpeg", rotate: "-rotate-[1.6deg]" },
   { title: "Gallery 14", src: "/gallery/g14.jpeg", rotate: "rotate-[1.1deg]" },
-  { title: "Gallery 15", src: "/gallery/g15.jpeg", rotate: "-rotate-[1.1deg]" },
+  { title: "Gallery 15", src: "/gallery/g15.jpg", rotate: "-rotate-[1.1deg]" },
 ];
 
 const accountGroups = [
@@ -53,16 +74,6 @@ const accountGroups = [
 
     ],
   },
-];
-
-const sectionNavItems = [
-  { href: "#top", label: "Top", icon: "home" },
-  { href: "#gallery", label: "Gallery", icon: "gallery" },
-  { href: "#day", label: "Day", icon: "calendar" },
-  { href: "#place", label: "Place", icon: "pin" },
-  { href: "#notice", label: "Notice", icon: "note" },
-  { href: "#account", label: "Account", icon: "heart" },
-  { href: "#upload", label: "Guest", icon: "message" },
 ];
 
 const introAnimationImages = [
@@ -628,68 +639,6 @@ function AccountGroupModal({
   );
 }
 
-function NavIcon({ icon }: { icon: (typeof sectionNavItems)[number]["icon"] }) {
-  const commonProps = {
-    viewBox: "0 0 24 24",
-    className: "h-[18px] w-[18px]",
-    fill: "none",
-    xmlns: "http://www.w3.org/2000/svg",
-  };
-
-  switch (icon) {
-    case "home":
-      return (
-        <svg {...commonProps}>
-          <path d="M4 11.5 12 5l8 6.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
-          <path d="M6.5 10.5V19h11v-8.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      );
-    case "gallery":
-      return (
-        <svg {...commonProps}>
-          <rect x="4" y="5" width="16" height="14" rx="2.5" stroke="currentColor" strokeWidth="1.7" />
-          <circle cx="9" cy="10" r="1.4" fill="currentColor" />
-          <path d="m7 16 3.2-3 2.6 2.3 2.2-1.9L17 16" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      );
-    case "calendar":
-      return (
-        <svg {...commonProps}>
-          <rect x="4" y="6" width="16" height="14" rx="2.5" stroke="currentColor" strokeWidth="1.7" />
-          <path d="M8 4v4M16 4v4M4 10.5h16" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-        </svg>
-      );
-    case "pin":
-      return (
-        <svg {...commonProps}>
-          <path d="M12 20c3.3-3.5 5-6.2 5-8.5a5 5 0 1 0-10 0c0 2.3 1.7 5 5 8.5Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
-          <circle cx="12" cy="11.5" r="1.8" fill="currentColor" />
-        </svg>
-      );
-    case "note":
-      return (
-        <svg {...commonProps}>
-          <rect x="5" y="4.5" width="14" height="15" rx="2.5" stroke="currentColor" strokeWidth="1.7" />
-          <path d="M8.5 9h7M8.5 12.5h7M8.5 16h4.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-        </svg>
-      );
-    case "heart":
-      return (
-        <svg {...commonProps}>
-          <path d="M12 19.5c-4.8-3.2-7-5.9-7-8.8A3.8 3.8 0 0 1 8.8 7c1.3 0 2.4.6 3.2 1.6A4.1 4.1 0 0 1 15.2 7 3.8 3.8 0 0 1 19 10.7c0 2.9-2.2 5.6-7 8.8Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
-        </svg>
-      );
-    case "message":
-      return (
-        <svg {...commonProps}>
-          <path d="M6.5 7h11a2.5 2.5 0 0 1 2.5 2.5v5A2.5 2.5 0 0 1 17.5 17H11l-4.5 3v-3H6.5A2.5 2.5 0 0 1 4 14.5v-5A2.5 2.5 0 0 1 6.5 7Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
-        </svg>
-      );
-    default:
-      return null;
-  }
-}
-
 function NoticeSectionHeading({ children }: { children: ReactNode }) {
   return (
     <p className="flex items-center justify-center gap-1.5 font-medium">
@@ -720,38 +669,61 @@ function GalleryModal({
   moment: (typeof galleryMoments)[number] | null;
   onClose: () => void;
 }) {
+  const [imageReady, setImageReady] = useState(false);
+
+  useEffect(() => {
+    setImageReady(false);
+  }, [moment?.src]);
+
   if (!moment) {
     return null;
   }
 
   return (
     <div
-      className="gallery-modal fixed inset-0 z-50 flex items-center justify-center"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/82 px-3 pt-14 pb-10 sm:px-6"
       role="dialog"
       aria-modal="true"
+      aria-busy={!imageReady}
       aria-label={`${moment.title} image preview`}
       onClick={onClose}
     >
       <button
         type="button"
         aria-label="Close image preview"
-        className="absolute right-5 top-5 flex h-10 w-10 items-center justify-center rounded-full border border-white/45 bg-white/12 text-xl text-white transition-colors duration-200 hover:bg-white/20"
+        className="absolute right-4 top-4 z-[60] flex h-10 w-10 items-center justify-center rounded-full border border-white/45 bg-black/35 text-xl text-white backdrop-blur-[2px] transition-colors duration-200 hover:bg-black/50 sm:right-6 sm:top-6"
         onClick={onClose}
       >
         ×
       </button>
 
       <div
-        className="relative w-full max-w-5xl overflow-hidden"
+        className="gallery-modal-panel relative w-full max-w-5xl overflow-hidden"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="relative aspect-[4/5] max-h-screen overflow-hidden sm:aspect-[5/4]">
+        <div className="relative aspect-[4/5] max-h-[min(100vh-8rem,920px)] w-full overflow-hidden sm:aspect-[5/4]">
+          {!imageReady ? (
+            <div
+              className="pointer-events-none absolute inset-0 z-[1] flex items-center justify-center"
+              aria-hidden
+            >
+              <span
+                className="inline-block size-9 rounded-full border-2 border-white/25 border-t-white/70 motion-safe:animate-spin"
+                style={{ animationDuration: "0.85s" }}
+              />
+            </div>
+          ) : null}
           <Image
+            key={moment.src}
             src={moment.src}
             alt={moment.title}
             fill
             sizes="100vw"
-            className="object-contain"
+            priority
+            fetchPriority="high"
+            className={`relative z-[2] object-contain transition-opacity duration-300 ease-out ${imageReady ? "opacity-100" : "opacity-0"}`}
+            onLoadingComplete={() => setImageReady(true)}
+            onError={() => setImageReady(true)}
           />
         </div>
       </div>
@@ -813,7 +785,6 @@ function SectionOrnament({
 export default function Home() {
   const [showIntro, setShowIntro] = useState(true);
   const [isLeavingIntro, setIsLeavingIntro] = useState(false);
-  const [isNavOpen, setIsNavOpen] = useState(false);
   const [selectedMoment, setSelectedMoment] = useState<(typeof galleryMoments)[number] | null>(null);
   const [copiedAccount, setCopiedAccount] = useState<string | null>(null);
   const [rsvpPromoOpen, setRsvpPromoOpen] = useState(false);
@@ -924,60 +895,6 @@ export default function Home() {
         onCopy={(account) => void handleCopyAccount(account)}
       />
 
-      <nav
-        className="fixed bottom-6 right-3 z-40"
-        aria-label="Section navigation"
-      >
-        <div className="flex flex-col items-end gap-3">
-          {isNavOpen ? (
-            <div className="flex w-12 flex-col items-stretch rounded-full bg-white/92 py-3 shadow-[0_12px_28px_rgba(0,0,0,0.08)] backdrop-blur-sm">
-              <div className="flex w-full flex-col gap-2">
-                {sectionNavItems.map((item) => (
-                  <a
-                    key={item.href}
-                    href={item.href}
-                    className="group relative flex h-8 w-full shrink-0 items-center justify-center"
-                    aria-label={`Go to ${item.label}`}
-                    onClick={() => setIsNavOpen(false)}
-                  >
-                    <span className="pointer-events-none absolute right-full top-1/2 z-10 mr-2 -translate-y-1/2 whitespace-nowrap text-[10px] tracking-[0.18em] text-text-secondary opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                      {item.label}
-                    </span>
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-foreground/75 transition-colors duration-200 group-hover:text-foreground">
-                      <NavIcon icon={item.icon} />
-                    </span>
-                  </a>
-                ))}
-              </div>
-            </div>
-          ) : null}
-
-          <button
-            type="button"
-            onClick={() => setIsNavOpen((current) => !current)}
-            aria-label={isNavOpen ? "Close navigation" : "Open navigation"}
-            className="flex h-12 w-12 items-center justify-center rounded-full bg-white/92 text-foreground shadow-[0_12px_28px_rgba(0,0,0,0.08)] backdrop-blur-sm transition-transform duration-200 hover:scale-[1.03]"
-          >
-            <svg
-              viewBox="0 0 24 24"
-              className="h-5 w-5"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              {isNavOpen ? (
-                <path d="M7 7 17 17M17 7 7 17" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-              ) : (
-                <>
-                  <path d="M7 8.5h10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-                  <path d="M7 12h10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-                  <path d="M7 15.5h10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-                </>
-              )}
-            </svg>
-          </button>
-        </div>
-      </nav>
-
       <main
         id="top"
         className={`relative min-h-screen overflow-hidden bg-white text-foreground transition-opacity duration-300 ${showIntro ? "pointer-events-none opacity-0" : "opacity-100"}`}
@@ -1010,13 +927,13 @@ export default function Home() {
                     sizes="(max-width: 640px) 92vw, (max-width: 1024px) 80vw, 512px"
                     className="object-cover"
                   />
-                  <div className="pointer-events-none absolute inset-x-0 bottom-[20%] z-10 flex justify-center px-3 sm:bottom-[11%]">
+                  <div className="pointer-events-none absolute inset-x-0 bottom-[16%] z-10 flex justify-center px-3 sm:bottom-[11%]">
                     <Image
                       src="/main_text.png"
                       alt="We're getting married"
                       width={520}
                       height={140}
-                      className="h-auto w-[90%] max-w-[280px] select-none object-contain drop-shadow-[0_2px_12px_rgba(255,255,255,0.35)]"
+                      className="h-auto w-[98%] max-w-[310px] select-none object-contain drop-shadow-[0_2px_12px_rgba(255,255,255,0.35)]"
                       sizes="(max-width: 640px) 78vw, 280px"
                     />
                   </div>
@@ -1059,45 +976,6 @@ export default function Home() {
               </div>
             </div>
           </section>
-
-
-
-          {/* 갤러리 */}
-          <section id="gallery" className="scroll-snap-section bg-white pt-10 pb-0 sm:pt-14 sm:pb-0">
-            <Image
-              src="/wewe2.png"
-              alt="갤러리"
-              width={320}
-              height={54}
-              className="mx-auto h-auto w-full max-w-[240px] bg-white -mb-8 -mt-16"
-            />
-
-            {/* 3*5 */}
-            <div className="mx-[-20px] overflow-hidden sm:mx-[-28px]">
-              <div className="grid grid-cols-3 gap-0">
-                {galleryMoments.map((moment) => (
-                  <button
-                    key={moment.title}
-                    type="button"
-                    onClick={() => setSelectedMoment(moment)}
-                    className="gallery-polaroid group block w-full text-left"
-                    aria-label={`${moment.title} image preview`}
-                  >
-                    <div className="relative aspect-square overflow-hidden">
-                      <Image
-                        src={moment.src}
-                        alt={moment.title}
-                        fill
-                        sizes="(max-width: 640px) 33vw, (max-width: 1024px) 220px, 240px"
-                        className="object-cover transition duration-300"
-                      />
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </section>
-
 
           {/* 날짜 */}
           <section
@@ -1148,17 +1026,52 @@ export default function Home() {
               >
                 캘린더에 등록
               </button>
-              <p className="section-body-text max-w-[300px] text-center text-black">
+              <p className="text-xs max-w-[300px] text-center text-black">
                 (카카오톡이 아닌 외부 브라우저에서 <br />사용 가능합니다.)
               </p>
             </div>
           </section>
 
+          {/* 갤러리 */}
+          <section id="gallery" className="scroll-snap-section z-10 bg-white pt-10 pb-0 sm:pt-14 sm:pb-0">
+            <Image
+              src="/wewe3.png"
+              alt="갤러리"
+              width={320}
+              height={54}
+              className="mx-auto h-auto w-full max-w-[240px] -mb-8 -mt-16"
+            />
+
+            {/* 3*5 */}
+            <div className="mx-[-20px] overflow-hidden sm:mx-[-28px]">
+              <div className="grid grid-cols-3 gap-0">
+                {galleryMoments.map((moment) => (
+                  <button
+                    key={moment.title}
+                    type="button"
+                    onClick={() => setSelectedMoment(moment)}
+                    className="gallery-polaroid group block w-full text-left"
+                    aria-label={`${moment.title} image preview`}
+                  >
+                    <div className="relative aspect-square overflow-hidden">
+                      <Image
+                        src={moment.src}
+                        alt={moment.title}
+                        fill
+                        sizes="(max-width: 640px) 33vw, (max-width: 1024px) 220px, 240px"
+                        className={`object-cover transition duration-300 ${"thumbObjectPosition" in moment ? (moment.thumbObjectPosition ?? "") : ""}`}
+                      />
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </section>
 
 
           {/* 위치 및 지도 */}
           <section id="place" className="scroll-snap-section py-10 sm:py-14">
-            <div className="flex justify-center items-center">
+            <div className="flex justify-center items-center pt-10">
               <Image
                 src="/새-03.png"
                 alt="장식용 새 일러스트"

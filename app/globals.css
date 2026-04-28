@@ -322,14 +322,15 @@ button {
   }
 }
 
-.gallery-modal {
-  animation: modal-fade-in 220ms ease-out both;
+/* 배경은 즉시; 사진 프레임만 짧게 등장 */
+.gallery-modal-panel {
+  animation: modal-fade-in 140ms ease-out both;
 }
 
 @keyframes modal-fade-in {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(6px);
   }
 
   to {

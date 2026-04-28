@@ -1075,11 +1075,11 @@ export default function Home() {
           >
             <div className="pt-8 flex justify-center">
               <Image
-                src="/calendar3.png"
+                src="/calendar5.png"
                 alt="Wedding calendar illustration"
                 width={320}
                 height={170}
-                className="h-auto w-24 bg-white sm:w-28"
+                className="h-auto w-24 sm:w-28"
                 priority
               />
             </div>
@@ -1138,11 +1138,11 @@ export default function Home() {
           <section id="place" className="scroll-snap-section py-10 sm:py-14">
             <div className="flex justify-center">
               <Image
-                src="/map3.png"
+                src="/foot.jpg"
                 alt="오시는 길"
                 width={1425}
                 height={1104}
-                className="h-auto w-22 bg-white sm:w-28 -mb-6 z-10 scale-y-[-1]"
+                className="h-auto w-12 bg-white sm:w-28 -mb-6 z-10 scale-y-[-1]"
                 style={{ transform: 'scaleY(-1)' }}
               />
 
@@ -1220,11 +1220,11 @@ export default function Home() {
           >
             <div className="flex justify-center">
               <Image
-                src="/notice.png"
+                src="/noticeImage.png"
                 alt="안내사항"
                 width={1448}
                 height={1086}
-                className="h-auto w-32 bg-white sm:w-32 -mr-6"
+                className="h-auto w-32 sm:w-32 -mr-6"
               />
             </div>
 

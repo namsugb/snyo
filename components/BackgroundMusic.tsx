@@ -244,12 +244,12 @@ export function BackgroundMusic() {
   const disabled = otherUnsupported || loadError || (useYoutube && !ytReady);
 
   const hint = otherUnsupported ? (
-    <p className="mt-1 max-w-[220px] text-[10px] leading-snug text-accent-rose">
+    <p className="mt-1 max-w-[220px] text-[10px] leading-snug text-black">
       이 주소는 재생할 수 없어요. 유튜브·직접 <strong className="font-medium">mp3/mp4</strong> 링크나{" "}
       <strong className="font-medium">public/audio</strong> 파일을 쓰세요.
     </p>
   ) : loadError ? (
-    <p className="mt-1 max-w-[220px] text-[10px] leading-snug text-accent-rose">
+    <p className="mt-1 max-w-[220px] text-[10px] leading-snug text-black">
       {useYoutube ? (
         <>
           유튜브를 불러오지 못했어요. 영상이 <strong className="font-medium">비공개·연령 제한</strong>
@@ -263,7 +263,7 @@ export function BackgroundMusic() {
       )}
     </p>
   ) : playError ? (
-    <p className="mt-1 max-w-[220px] text-[10px] leading-snug text-accent-rose">
+    <p className="mt-1 max-w-[220px] text-[10px] leading-snug text-black">
       재생이 막혔어요. 다른 브라우저에서 시도하거나 파일 형식을 확인해 주세요.
     </p>
   ) : useYoutube ? (

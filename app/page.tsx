@@ -204,7 +204,7 @@ function RsvpPromoSheet({
 
 function RequiredMark() {
   return (
-    <span className="ml-0.5 text-accent-rose" aria-hidden>
+    <span className="ml-0.5 text-black" aria-hidden>
       *
     </span>
   );
@@ -366,7 +366,7 @@ function RsvpFormModal({ open, onClose }: { open: boolean; onClose: () => void }
             >
               <span>
                 개인정보 수집 및 이용 동의{" "}
-                <span className="text-accent-rose">(필수)</span>
+                <span className="text-black">(필수)</span>
               </span>
               <svg
                 viewBox="0 0 24 24"
@@ -399,13 +399,13 @@ function RsvpFormModal({ open, onClose }: { open: boolean; onClose: () => void }
               type="checkbox"
               checked={privacyAgreed}
               onChange={(ev) => setPrivacyAgreed(ev.target.checked)}
-              className="mt-0.5 h-4 w-4 shrink-0 rounded border-black text-accent-rose focus:ring-accent-rose/40"
+              className="mt-0.5 h-4 w-4 shrink-0 rounded border-black accent-black focus:ring-black/35"
             />
             <span>수집 및 이용에 동의합니다.</span>
           </label>
 
           {formError ? (
-            <p className="mt-3 text-center text-sm text-accent-rose" role="alert">
+            <p className="mt-3 text-center text-sm text-black" role="alert">
               {formError}
             </p>
           ) : null}
@@ -522,7 +522,7 @@ function GuestPhotoUploader() {
       </button>
       {notice ? (
         <p
-          className={`mt-3 text-sm ${notice.kind === "ok" ? "text-foreground" : "text-accent-rose"}`}
+          className={`mt-3 text-sm ${notice.kind === "ok" ? "text-foreground" : "text-black"}`}
           role={notice.kind === "err" ? "alert" : undefined}
         >
           {notice.text}
@@ -744,17 +744,19 @@ function IntroOverlay({ isLeaving }: { isLeaving: boolean }) {
       aria-hidden={isLeaving}
     >
       <div className="intro-motion-stage relative h-full w-full overflow-hidden">
-        {introAnimationImages.map((image) => (
-          <Image
-            key={image.src}
-            src={image.src}
-            alt={image.alt}
-            fill
-            priority
-            sizes="100vw"
-            className={`intro-motion-frame object-contain ${image.className}`}
-          />
-        ))}
+        <div className="absolute inset-[25%]">
+          {introAnimationImages.map((image) => (
+            <Image
+              key={image.src}
+              src={image.src}
+              alt={image.alt}
+              fill
+              priority
+              sizes="50vw"
+              className={`intro-motion-frame object-contain ${image.className}`}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -1000,25 +1002,21 @@ export default function Home() {
                 height={74}
                 className="h-auto w-24 opacity-90 sm:w-28"
               />
-              <div className="mx-auto w-full max-w-xs bg-white px-2 py-8 text-center text-[#333333] sm:px-3 sm:py-10">
-                <p className="text-base font-normal leading-[1.75] tracking-[-0.01em] sm:leading-[1.8]">
-                  함께 보내는 아홉 번째 여름,
-                  <br />
-                  수많은 계절을 함께 걸어온 저희가
-                  <br />
-                  평생을 함께할 약속을 하고자 합니다.
-                </p>
-                <p className="mt-5 text-base font-normal leading-[1.75] tracking-[-0.01em] sm:mt-6 sm:leading-[1.8]">
-                  저희의 새로운 시작에
-                  <br />
-                  따뜻한 발걸음으로 함께해주신다면
-                  <br />
-                  깊은 감사와 기쁨으로 간직하겠습니다.
-                </p>
+              <div className="mx-auto w-full max-w-xs bg-white px-2 py-8 text-center text-black sm:px-3 sm:py-10">
+                <div className="mx-auto w-full max-w-[280px] sm:max-w-[300px]">
+                  <Image
+                    src="/ment.jpeg"
+                    alt="신랑 신부 초대 인사말"
+                    width={600}
+                    height={780}
+                    className="h-auto w-full object-contain"
+                    sizes="(max-width: 640px) 85vw, 300px"
+                  />
+                </div>
                 <p className="mt-9 text-base font-normal leading-[1.75] tracking-[-0.01em] sm:mt-10 sm:leading-[1.8]">
-                  윤우영 · 이민자의 장남 <span className="font-semibold text-[#2a2a2a]">준영</span>
+                  윤우영 · 이민자의 장남 <span className="font-semibold text-black">준영</span>
                   <br />
-                  남유행 · 김은실의 장녀 <span className="font-semibold text-[#2a2a2a]">승효</span>
+                  남유행 · 김은실의 장녀 <span className="font-semibold text-black">승효</span>
                 </p>
                 <p className="mt-7 text-base font-normal leading-[1.75] tracking-[-0.01em] sm:mt-8 sm:leading-[1.8]">
                   2026년 6월 20일 토요일 오후 1시 40분
@@ -1075,7 +1073,7 @@ export default function Home() {
           >
             <div className="pt-8 flex justify-center">
               <Image
-                src="/calendar5.png"
+                src="/calendar6.png"
                 alt="Wedding calendar illustration"
                 width={320}
                 height={170}
@@ -1136,16 +1134,15 @@ export default function Home() {
 
           {/* 위치 및 지도 */}
           <section id="place" className="scroll-snap-section py-10 sm:py-14">
-            <div className="flex justify-center">
+            <div className="flex justify-center items-center">
               <Image
-                src="/foot.jpg"
-                alt="오시는 길"
-                width={1425}
-                height={1104}
-                className="h-auto w-12 bg-white sm:w-28 -mb-6 z-10 scale-y-[-1]"
-                style={{ transform: 'scaleY(-1)' }}
+                src="/새-03.png"
+                alt="장식용 새 일러스트"
+                width={204}
+                height={124}
+                className="h-auto w-20 mx-auto soft-float"
+                style={{ pointerEvents: "none", userSelect: "none" }}
               />
-
             </div>
 
             <div className="overflow-hidden bg-white">
@@ -1158,7 +1155,7 @@ export default function Home() {
               />
 
               <div className="mx-auto mt-6 w-full max-w-[300px] px-1 pb-2 text-center text-base font-normal leading-[1.45] tracking-[-0.01em] text-foreground sm:text-base sm:leading-[1.5]">
-                <p className="font-medium text-[#2c2c2c]">아이벡스컨벤션</p>
+                <p className="font-medium text-black">아이벡스컨벤션</p>
                 <p className="mt-1.5">
                   경기 광명시 양지로 17
                   <br />
@@ -1213,7 +1210,7 @@ export default function Home() {
           </section>
 
 
-
+          {/* 안내사항 */}
           <section
             id="notice"
             className="scroll-snap-section mx-[-20px] bg-gray-100 px-[20px] py-10 sm:mx-[-28px] sm:px-[28px] sm:py-14"
@@ -1228,7 +1225,7 @@ export default function Home() {
               />
             </div>
 
-            <div className="relative mx-auto w-full max-w-sm overflow-hidden rounded-sm text-center text-[#383838] film-grain sm:max-w-md sm:px-6 sm:pt-4">
+            <div className="relative mx-auto w-full max-w-sm overflow-hidden rounded-sm text-center text-black film-grain sm:max-w-md sm:px-6 sm:pt-4">
               <p className="text-[15px] font-bold tracking-tight sm:text-base">주차관련안내</p>
               <div className="mt-2 space-y-4 text-[13px] font-normal leading-[1.45] tracking-[-0.01em] sm:mt-6 sm:text-base sm:leading-[1.5]">
                 <div className="space-y-1">
@@ -1283,17 +1280,6 @@ export default function Home() {
 
 
           <section id="upload" className="scroll-snap-section py-10 text-center sm:py-14">
-            <div className="flex justify-center">
-              <Image
-                src="/새-03.png"
-                alt="하객 참석 · 사진 안내"
-                width={204}
-                height={124}
-                className="h-auto w-24 soft-float sm:w-28"
-                style={{ pointerEvents: "none", userSelect: "none" }}
-              />
-            </div>
-
             <div className="mt-4 rounded-2xl bg-border-soft/35 px-5 py-8 sm:px-7 sm:py-9">
               <p className="text-center text-base font-bold">전세버스 탑승 여부</p>
               <RsvpIntroCopy className="mt-4" />

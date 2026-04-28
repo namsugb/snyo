@@ -6,6 +6,7 @@ import {
   submitWeddingRsvp,
 } from "@/app/actions/wedding";
 import { createClient as createBrowserSupabaseClient } from "@/lib/supabase/client";
+import { BackgroundMusic } from "@/components/BackgroundMusic";
 import Image from "next/image";
 import {
   useEffect,
@@ -880,6 +881,7 @@ export default function Home() {
   return (
     <>
       {showIntro ? <IntroOverlay isLeaving={isLeavingIntro} /> : null}
+      {!showIntro ? <BackgroundMusic /> : null}
       <GalleryModal moment={selectedMoment} onClose={() => setSelectedMoment(null)} />
       <RsvpPromoSheet
         open={rsvpPromoOpen}

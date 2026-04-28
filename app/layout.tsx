@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { BackgroundMusic } from "@/components/BackgroundMusic";
 import "pretendard/dist/web/static/pretendard-dynamic-subset.css";
 import "./globals.css";
 
@@ -31,7 +30,6 @@ export default function RootLayout({
     <html lang="ko" className="h-full bg-white antialiased">
       <body className="min-h-full flex flex-col bg-white">
         {children}
-        <BackgroundMusic />
       </body>
     </html>
   );

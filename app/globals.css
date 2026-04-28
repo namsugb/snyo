@@ -109,6 +109,26 @@ button {
   animation: intro-fade-out 0.7s ease-in forwards;
 }
 
+.intro-motion-stage {
+  background: #ffffff;
+}
+
+.intro-motion-frame {
+  opacity: 0;
+  will-change: opacity;
+  animation-duration: 2.0s;
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: both;
+}
+
+.intro-motion-frame-one {
+  animation-name: intro-frame-one;
+}
+
+.intro-motion-frame-two {
+  animation-name: intro-frame-two;
+}
+
 .intro-doodle {
   filter: drop-shadow(0 12px 22px rgb(107 78 70 / 0.08));
 }
@@ -192,6 +212,52 @@ button {
   to {
     opacity: 0;
     transform: scale(1.03);
+  }
+}
+
+@keyframes intro-frame-one {
+
+  0%,
+  22% {
+    opacity: 1;
+  }
+
+  26%,
+  47% {
+    opacity: 0;
+  }
+
+  51%,
+  72% {
+    opacity: 1;
+  }
+
+  76%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes intro-frame-two {
+
+  0%,
+  22% {
+    opacity: 0;
+  }
+
+  26%,
+  47% {
+    opacity: 1;
+  }
+
+  51%,
+  72% {
+    opacity: 0;
+  }
+
+  76%,
+  100% {
+    opacity: 1;
   }
 }
 

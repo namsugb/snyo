@@ -1,6 +1,11 @@
 ﻿"use client";
 
-import { submitGuestPhotos, submitWeddingRsvp } from "@/app/actions/wedding";
+import {
+  completeGuestPhotoUploads,
+  createGuestPhotoUploadUrls,
+  submitWeddingRsvp,
+} from "@/app/actions/wedding";
+import { createClient as createBrowserSupabaseClient } from "@/lib/supabase/client";
 import Image from "next/image";
 import {
   useEffect,
@@ -57,6 +62,19 @@ const sectionNavItems = [
   { href: "#account", label: "Account", icon: "heart" },
   { href: "#upload", label: "Guest", icon: "message" },
 ];
+
+const introAnimationImages = [
+  {
+    src: "/animation/KakaoTalk_20260425_190417916.jpg",
+    alt: "Wedding invitation intro animation first frame",
+    className: "intro-motion-frame-one",
+  },
+  {
+    src: "/animation/KakaoTalk_20260425_190417916_01.jpg",
+    alt: "Wedding invitation intro animation second frame",
+    className: "intro-motion-frame-two",
+  },
+] as const;
 
 /**
  * .ics는 서버(`/api/wedding-calendar`)에서 내려받도록 함.
@@ -432,6 +450,7 @@ function RsvpFormModal({ open, onClose }: { open: boolean; onClose: () => void }
 function GuestPhotoUploader() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [pending, startTransition] = useTransition();
+  const [uploading, setUploading] = useState(false);
   const [notice, setNotice] = useState<{ kind: "ok" | "err"; text: string } | null>(null);
 
   const openPicker = () => {
@@ -440,24 +459,67 @@ function GuestPhotoUploader() {
   };
 
   const onFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const list = e.target.files;
-    e.target.value = "";
-    if (!list?.length) return;
+    const input = e.currentTarget;
+    const files = Array.from(input.files ?? []);
+    input.value = "";
+    if (files.length === 0) return;
+
     setNotice(null);
+    setUploading(true);
     startTransition(() => {
       void (async () => {
-        const fd = new FormData();
-        for (let i = 0; i < list.length; i += 1) {
-          fd.append("files", list[i]);
-        }
-        const result = await submitGuestPhotos(fd);
-        if (result.ok) {
+        try {
+          const uploadPlan = await createGuestPhotoUploadUrls(
+            files.map((file) => ({
+              name: file.name,
+              type: file.type,
+              size: file.size,
+            })),
+          );
+
+          if (!uploadPlan.ok) {
+            setNotice({ kind: "err", text: uploadPlan.error });
+            return;
+          }
+
+          const supabase = createBrowserSupabaseClient();
+          for (let i = 0; i < uploadPlan.uploads.length; i += 1) {
+            const upload = uploadPlan.uploads[i];
+            const file = files[i];
+            const { error } = await supabase.storage
+              .from("guest-uploads")
+              .uploadToSignedUrl(upload.path, upload.token, file, {
+                contentType: file.type || "application/octet-stream",
+              });
+
+            if (error) {
+              throw error;
+            }
+          }
+
+          const completedUploads = uploadPlan.uploads.map((upload) => ({
+            name: upload.name,
+            type: upload.type,
+            size: upload.size,
+            path: upload.path,
+          }));
+          const result = await completeGuestPhotoUploads(completedUploads);
+          if (result.ok) {
+            setNotice({
+              kind: "ok",
+              text: `${result.count}장 업로드되었습니다. 감사합니다!`,
+            });
+          } else {
+            setNotice({ kind: "err", text: result.error });
+          }
+        } catch (error) {
+          console.error("[GuestPhotoUploader]", error);
           setNotice({
-            kind: "ok",
-            text: `${result.count}장 업로드되었습니다. 감사합니다!`,
+            kind: "err",
+            text: "업로드 요청을 보내지 못했습니다. 잠시 후 다시 시도해 주세요.",
           });
-        } else {
-          setNotice({ kind: "err", text: result.error });
+        } finally {
+          setUploading(false);
         }
       })();
     });
@@ -472,14 +534,15 @@ function GuestPhotoUploader() {
         accept="image/jpeg,image/png,image/webp,image/gif"
         className="sr-only"
         onChange={onFileChange}
+        disabled={uploading || pending}
       />
       <button
         type="button"
         onClick={openPicker}
-        disabled={pending}
+        disabled={uploading || pending}
         className="rounded-full border border-black px-6 py-3 text-sm tracking-[0.18em] text-ink-accent uppercase transition-transform duration-200 hover:-translate-y-0.5 disabled:opacity-55"
       >
-        {pending ? "업로드 중…" : "Upload"}
+        {uploading || pending ? "업로드 중…" : "Upload"}
       </button>
       {notice ? (
         <p
@@ -704,15 +767,18 @@ function IntroOverlay({ isLeaving }: { isLeaving: boolean }) {
       className={`intro-overlay fixed inset-0 z-50 bg-white ${isLeaving ? "intro-overlay-leave" : "intro-overlay-enter"}`}
       aria-hidden={isLeaving}
     >
-      <div className="relative h-full w-full">
-        <Image
-          src="/final-intro.png"
-          alt="Wedding invitation intro"
-          fill
-          priority
-          sizes="100vw"
-          className="object-contain"
-        />
+      <div className="intro-motion-stage relative h-full w-full overflow-hidden">
+        {introAnimationImages.map((image) => (
+          <Image
+            key={image.src}
+            src={image.src}
+            alt={image.alt}
+            fill
+            priority
+            sizes="100vw"
+            className={`intro-motion-frame object-contain ${image.className}`}
+          />
+        ))}
       </div>
     </div>
   );
@@ -757,7 +823,7 @@ export default function Home() {
   useEffect(() => {
     document.body.style.overflow = "hidden";
 
-    const startFade = window.setTimeout(() => setIsLeavingIntro(true), 1400);
+    const startFade = window.setTimeout(() => setIsLeavingIntro(true), 3600);
     const removeIntro = window.setTimeout(() => setShowIntro(false), 2000);
 
     return () => {
@@ -1256,7 +1322,7 @@ export default function Home() {
               <p className="mt-2 text-sm leading-6 text-text-secondary">
                 소중한 추억을 함께 나누어요
                 <br />
-                <span className="text-xs">사진 여러 장을 한 번에 선택할 수 있어요. (최대 15장, 각 10MB)</span>
+                <span className="text-xs">사진 여러 장을 한 번에 선택할 수 있어요. (최대 30장, 각 10MB)</span>
               </p>
               <div className="mt-5 flex justify-center">
                 <GuestPhotoUploader />

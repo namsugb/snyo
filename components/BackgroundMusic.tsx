@@ -317,7 +317,7 @@ export function BackgroundMusic() {
         type="button"
         onClick={toggle}
         disabled={disabled}
-        className="flex h-11 items-center gap-2 rounded-full border border-border-soft/90 bg-white/93 px-4 text-xs font-medium text-ink-accent shadow-[0_8px_24px_rgba(0,0,0,0.08)] backdrop-blur-sm transition-opacity hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-45 sm:text-sm"
+        className="flex h-11 items-center gap-2 rounded-full bg-white/93 px-4 text-xs font-medium text-ink-accent shadow-[0_8px_24px_rgba(0,0,0,0.08)] backdrop-blur-sm transition-opacity hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-45 sm:text-sm"
         aria-pressed={playing}
         aria-label={playing ? "배경음악 끄기" : "배경음악 재생"}
       >

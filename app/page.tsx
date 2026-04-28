@@ -101,7 +101,7 @@ const WEDDING_RSVP_DETAILS = {
 
 function RsvpIntroCopy({ className = "" }: { className?: string }) {
   return (
-    <p className={`text-center text-sm leading-relaxed text-foreground ${className}`}>
+    <p className={`section-body-text text-center text-foreground ${className}`}>
       전세버스 탑승 여부를
       <br />
       미리 확인하고자 하오니,
@@ -118,7 +118,7 @@ function RsvpEventDetails({ className = "" }: { className?: string }) {
     { k: "위치", v: WEDDING_RSVP_DETAILS.where },
   ];
   return (
-    <div className={`mx-auto w-full max-w-sm space-y-2.5 text-sm ${className}`}>
+    <div className={`mx-auto w-full max-w-sm space-y-2.5 section-body-text ${className}`}>
       {rows.map((row) => (
         <div
           key={row.k}
@@ -319,7 +319,7 @@ function RsvpFormModal({ open, onClose }: { open: boolean; onClose: () => void }
             </div>
             <div>
               <span className="mb-2 block text-sm text-foreground">동승자 명단</span>
-              <p className="mb-3 text-xs leading-relaxed text-text-secondary">
+              <p className="section-body-text mb-3 text-text-secondary">
                 추가로 함께 탑승하시는 분이 있으면 이름을 적어 주세요.
               </p>
               <div className="space-y-2">
@@ -405,7 +405,7 @@ function RsvpFormModal({ open, onClose }: { open: boolean; onClose: () => void }
             {privacyOpen ? (
               <div
                 id={privacyDetailsId}
-                className="border-t border-border-soft px-4 pb-3 pt-2 text-xs leading-relaxed text-text-secondary"
+                className="section-body-text border-t border-border-soft px-4 pb-3 pt-2 text-text-secondary"
               >
                 <p>
                   수집 항목: 성명, 동승자 명단, 탑승 장소
@@ -608,10 +608,8 @@ function AccountGroupModal({
               <article key={`${group.title}-${info.name}-${info.account}`}>
                 <div className="flex items-start justify-between gap-2">
                   <div className="pr-3">
-                    <p className="mt-1 text-base text-foreground">{info.name}</p>
-                    <p className="text-base leading-8 text-foreground">
-                      {info.bank} {info.account}
-                    </p>
+                    <p className="section-body-text mt-1 text-foreground">{info.name}</p>
+                    <p className="section-body-text mt-1 text-foreground">{info.bank} {info.account}</p>
                   </div>
                   <button
                     type="button"
@@ -932,7 +930,7 @@ export default function Home() {
       >
         <div className="flex flex-col items-end gap-3">
           {isNavOpen ? (
-            <div className="flex w-12 flex-col items-stretch rounded-full border border-border-soft/80 bg-white/92 py-3 shadow-[0_12px_28px_rgba(0,0,0,0.08)] backdrop-blur-sm">
+            <div className="flex w-12 flex-col items-stretch rounded-full bg-white/92 py-3 shadow-[0_12px_28px_rgba(0,0,0,0.08)] backdrop-blur-sm">
               <div className="flex w-full flex-col gap-2">
                 {sectionNavItems.map((item) => (
                   <a
@@ -958,7 +956,7 @@ export default function Home() {
             type="button"
             onClick={() => setIsNavOpen((current) => !current)}
             aria-label={isNavOpen ? "Close navigation" : "Open navigation"}
-            className="flex h-12 w-12 items-center justify-center rounded-full border border-border-soft/80 bg-white/92 text-foreground shadow-[0_12px_28px_rgba(0,0,0,0.08)] backdrop-blur-sm transition-transform duration-200 hover:scale-[1.03]"
+            className="flex h-12 w-12 items-center justify-center rounded-full bg-white/92 text-foreground shadow-[0_12px_28px_rgba(0,0,0,0.08)] backdrop-blur-sm transition-transform duration-200 hover:scale-[1.03]"
           >
             <svg
               viewBox="0 0 24 24"
@@ -1012,6 +1010,16 @@ export default function Home() {
                     sizes="(max-width: 640px) 92vw, (max-width: 1024px) 80vw, 512px"
                     className="object-cover"
                   />
+                  <div className="pointer-events-none absolute inset-x-0 bottom-[20%] z-10 flex justify-center px-3 sm:bottom-[11%]">
+                    <Image
+                      src="/main_text.png"
+                      alt="We're getting married"
+                      width={520}
+                      height={140}
+                      className="h-auto w-[90%] max-w-[280px] select-none object-contain drop-shadow-[0_2px_12px_rgba(255,255,255,0.35)]"
+                      sizes="(max-width: 640px) 78vw, 280px"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -1038,12 +1046,12 @@ export default function Home() {
                     sizes="(max-width: 640px) 85vw, 300px"
                   />
                 </div>
-                <p className="mt-9 text-base font-normal leading-[1.75] tracking-[-0.01em] sm:mt-10 sm:leading-[1.8]">
+                <p className="section-body-text mt-9 font-normal sm:mt-10">
                   윤우영 · 이민자의 장남 <span className="font-semibold text-black">준영</span>
                   <br />
                   남유행 · 김은실의 장녀 <span className="font-semibold text-black">승효</span>
                 </p>
-                <p className="mt-7 text-base font-normal leading-[1.75] tracking-[-0.01em] sm:mt-8 sm:leading-[1.8]">
+                <p className="section-body-text mt-7 font-normal sm:mt-8">
                   2026년 6월 20일 토요일 오후 1시 40분
                   <br />
                   아이벡스 컨벤션
@@ -1098,7 +1106,7 @@ export default function Home() {
           >
 
 
-            <div className="pt-10 pb-4 text-center">
+            <div className="pb-6 text-center font-medium">
               <p className="font-display text-base">2026년 6월 20일 토요일 <br />오후 1시 40분</p>
             </div>
 
@@ -1140,8 +1148,8 @@ export default function Home() {
               >
                 캘린더에 등록
               </button>
-              <p className="max-w-[300px] text-center text-[11px] leading-relaxed text-black">
-                (카카오톡이 아닌 외부 브라우저에서 사용 가능합니다.)
+              <p className="section-body-text max-w-[300px] text-center text-black">
+                (카카오톡이 아닌 외부 브라우저에서 <br />사용 가능합니다.)
               </p>
             </div>
           </section>
@@ -1171,7 +1179,7 @@ export default function Home() {
                 className="mx-auto h-auto w-full max-w-[300px]"
               />
 
-              <div className="mx-auto mt-6 w-full max-w-[300px] px-1 pb-2 text-center text-base font-normal leading-[1.45] tracking-[-0.01em] text-foreground sm:text-base sm:leading-[1.5]">
+              <div className="section-body-text mx-auto mt-6 w-full max-w-[300px] px-1 pb-2 text-center font-normal text-foreground">
                 <p className="font-medium text-black">아이벡스컨벤션</p>
                 <p className="mt-1.5">
                   경기 광명시 양지로 17
@@ -1245,7 +1253,7 @@ export default function Home() {
 
             <div className="relative mx-auto w-full max-w-sm overflow-hidden rounded-sm text-center text-black film-grain sm:max-w-md sm:px-6 sm:pt-4">
               <p className="text-[15px] font-bold tracking-tight sm:text-base">주차관련안내</p>
-              <div className="mt-2 space-y-4 text-[13px] font-normal leading-[1.45] tracking-[-0.01em] sm:mt-6 sm:text-base sm:leading-[1.5]">
+              <div className="section-body-text mt-2 space-y-4 font-normal sm:mt-6">
                 <div className="space-y-1">
                   <NoticeSectionHeading>주차안내</NoticeSectionHeading>
                   <p>- 지하 5~6층 주차해야 편해요</p>
@@ -1314,11 +1322,16 @@ export default function Home() {
             <div className="mt-5 rounded-[28px] px-5 py-7">
 
               <p className="mt-4 font-bold text-base">사진 업로드</p>
-              <p className="mt-2 text-sm leading-6 text-text-secondary">
+              <p className="section-body-text mt-2 text-text-secondary">
                 소중한 추억을 함께 나누어요
-                <br />
-                <span className="text-xs">사진 여러 장을 한 번에 선택할 수 있어요. (최대 30장, 각 10MB)</span>
               </p>
+              <p className="section-body-text mt-2 text-text-secondary">
+                사진 여러 장을 한 번에 선택할 수 있어요.
+              </p>
+              <p className="section-body-text text-gray-400/80">
+                (단일 파일 최대 용량 10MB)
+              </p>
+
               <div className="mt-5 flex justify-center">
                 <GuestPhotoUploader />
               </div>

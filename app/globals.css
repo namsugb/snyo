@@ -69,6 +69,20 @@ button {
   font-family: var(--font-sans);
 }
 
+/* 섹션 본문·긴글 (모바일 15px → sm 16px, 행간 통일) */
+.section-body-text {
+  font-size: 0.9375rem;
+  line-height: 1.62;
+  letter-spacing: -0.01em;
+}
+
+@media (min-width: 640px) {
+  .section-body-text {
+    font-size: 1rem;
+    line-height: 1.58;
+  }
+}
+
 .paper-texture {
   background-image:
     radial-gradient(circle at top left, rgb(255 255 255 / 0.9), transparent 32%),

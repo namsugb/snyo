@@ -3,27 +3,20 @@
 import { createClient } from "@/lib/supabase/server";
 import { createServiceRoleClient } from "@/lib/supabase/admin";
 
-const MEALS = ["planned", "no", "undecided"] as const;
-const SIDES = ["groom", "bride"] as const;
-
-export type WeddingRsvpMeal = (typeof MEALS)[number];
-export type WeddingRsvpSide = (typeof SIDES)[number];
+const BOARDING_PLACES = ["고흥", "순천"] as const;
+export type WeddingBusBoardingPlace = (typeof BOARDING_PLACES)[number];
 
 export type SubmitWeddingRsvpInput = {
-  side: WeddingRsvpSide;
   guestName: string;
   headcount: number;
-  meal: WeddingRsvpMeal;
+  boardingPlace: WeddingBusBoardingPlace;
 };
 
 export async function submitWeddingRsvp(
   input: SubmitWeddingRsvpInput,
 ): Promise<{ ok: true } | { ok: false; error: string }> {
-  if (!SIDES.includes(input.side)) {
-    return { ok: false, error: "전달 대상이 올바르지 않습니다." };
-  }
-  if (!MEALS.includes(input.meal)) {
-    return { ok: false, error: "식사 여부가 올바르지 않습니다." };
+  if (!BOARDING_PLACES.includes(input.boardingPlace)) {
+    return { ok: false, error: "탑승 장소가 올바르지 않습니다." };
   }
 
   const guestName = input.guestName.trim();
@@ -33,15 +26,14 @@ export async function submitWeddingRsvp(
 
   const headcount = Math.floor(Number(input.headcount));
   if (!Number.isFinite(headcount) || headcount < 1 || headcount > 99) {
-    return { ok: false, error: "참석 인원을 확인해 주세요." };
+    return { ok: false, error: "탑승 인원을 확인해 주세요." };
   }
 
   const supabase = await createClient();
   const { error } = await supabase.from("wedding_rsvps").insert({
-    side: input.side,
     guest_name: guestName,
     headcount,
-    meal: input.meal,
+    boarding_place: input.boardingPlace,
     privacy_agreed: true,
   });
 

@@ -21,7 +21,7 @@ import {
 
 /** thumbObjectPosition: grid 썸네일(object-cover) 세로 초점. 위가 잘리면 Y%를 50보다 작게(예: 32~40). */
 const galleryMoments = [
-  { title: "Gallery 01", src: "/gallery/g1.jpeg", rotate: "-rotate-[1.8deg]" },
+  { title: "Gallery 01", src: "/gallery/g1.jpg", rotate: "-rotate-[1.8deg]" },
   { title: "Gallery 02", src: "/gallery/g2.jpeg", rotate: "rotate-[1.6deg]" },
   { title: "Gallery 03", src: "/gallery/g3.jpeg", rotate: "-rotate-[1.4deg]" },
   { title: "Gallery 04", src: "/gallery/g4.jpeg", rotate: "rotate-[2deg]" },

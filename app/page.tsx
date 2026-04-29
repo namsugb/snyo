@@ -109,6 +109,8 @@ const WEDDING_RSVP_DETAILS = {
   when: "2026년 6월 20일 토요일 오후 1시 40분",
   where: "아이벡스컨벤션",
   whereFull: "경기 광명시 양지로 17 AK 플라자 광명 5층 아이벡스컨벤션",
+  /** 전세버스 노선 안내 */
+  busRoute: "녹동 출발 → 고흥 → 순천 → 광명 도착",
 } as const;
 
 function RsvpIntroCopy({ className = "" }: { className?: string }) {
@@ -128,6 +130,7 @@ function RsvpEventDetails({ className = "" }: { className?: string }) {
     { k: "주인공", v: WEDDING_RSVP_DETAILS.couple },
     { k: "예식일", v: WEDDING_RSVP_DETAILS.when },
     { k: "위치", v: WEDDING_RSVP_DETAILS.where },
+    { k: "경로", v: WEDDING_RSVP_DETAILS.busRoute },
   ];
   return (
     <div className={`mx-auto w-full max-w-sm space-y-2.5 section-body-text ${className}`}>
@@ -297,14 +300,17 @@ function RsvpFormModal({ open, onClose }: { open: boolean; onClose: () => void }
         onClick={onClose}
       />
       <div className="relative z-10 flex max-h-[min(90vh,720px)] w-full max-w-md flex-col rounded-t-2xl bg-white shadow-[0_-12px_48px_rgba(0,0,0,0.18)] sm:max-h-[85vh] sm:rounded-2xl sm:shadow-xl">
-        <div className="flex shrink-0 items-center justify-between border-b border-border-soft px-5 py-4">
-          <h2 id="rsvp-form-title" className="text-base font-semibold text-foreground">
-            전세버스 탑승 여부
-          </h2>
+        <div className="flex shrink-0 items-start justify-between border-b border-border-soft px-5 py-4">
+          <div className="min-w-0 flex-1 pr-3">
+            <h2 id="rsvp-form-title" className="text-base font-semibold text-foreground">
+              전세버스 탑승 여부
+            </h2>
+            <p className="mt-1.5 text-xs font-medium leading-snug text-text-secondary">{WEDDING_RSVP_DETAILS.busRoute}</p>
+          </div>
           <button
             type="button"
             onClick={onClose}
-            className="flex h-9 w-9 items-center justify-center rounded-full text-foreground/70 hover:bg-black/5"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-foreground/70 hover:bg-black/5"
             aria-label="닫기"
           >
             <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -330,13 +336,14 @@ function RsvpFormModal({ open, onClose }: { open: boolean; onClose: () => void }
               />
             </div>
             <div>
-              <span className="mb-2 block text-sm text-foreground">동승자 명단</span>
-              <p className="section-body-text mb-3 text-text-secondary">
+              <span className="block text-sm text-foreground">동승자 명단</span>
+              <p className="mb-3 text-[10px] leading-tight text-text-secondary">
                 추가로 함께 탑승하시는 분이 있으면 이름을 적어 주세요.
               </p>
+
               <div className="space-y-2">
                 {companions.map((companionName, index) => (
-                  <div key={`companion-${index}`} className="flex gap-2">
+                  <div key={`companion-${index}`} className="flex gap-1">
                     <input
                       id={index === 0 ? "rsvp-companion-0" : undefined}
                       aria-label={`동승자 ${index + 1}`}
@@ -345,7 +352,7 @@ function RsvpFormModal({ open, onClose }: { open: boolean; onClose: () => void }
                         const v = ev.target.value;
                         setCompanions((prev) => prev.map((row, i) => (i === index ? v : row)));
                       }}
-                      placeholder={index === 0 ? "동승자 이름" : `동승자 ${index + 1}`}
+                      placeholder={index === 0 ? "동승자 성함" : `동승자 ${index + 1}`}
                       autoComplete="name"
                       className="min-w-0 flex-1 rounded-2xl border border-black px-4 py-3 text-sm text-foreground outline-none placeholder:text-text-secondary/70 focus:ring-2 focus:ring-accent-rose/35"
                     />
@@ -357,7 +364,20 @@ function RsvpFormModal({ open, onClose }: { open: boolean; onClose: () => void }
                           setCompanions((prev) => prev.filter((_, i) => i !== index));
                         }}
                       >
-                        삭제
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                          aria-hidden="true"
+                          className="w-4 h-4"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M6.47 6.47a.75.75 0 0 1 1.06 0L10 8.94l2.47-2.47a.75.75 0 1 1 1.06 1.06L11.06 10l2.47 2.47a.75.75 0 0 1-1.06 1.06L10 11.06l-2.47 2.47a.75.75 0 0 1-1.06-1.06L8.94 10l-2.47-2.47a.75.75 0 0 1 0-1.06z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+
                       </button>
                     ) : null}
                   </div>
@@ -451,7 +471,7 @@ function RsvpFormModal({ open, onClose }: { open: boolean; onClose: () => void }
             disabled={isPending}
             className="mt-4 w-full rounded-2xl bg-accent-rose px-4 py-3.5 text-sm font-semibold text-white transition-opacity hover:opacity-92 disabled:opacity-55"
           >
-            {isPending ? "저장 중…" : "저장하기"}
+            {isPending ? "전달 중…" : "전달"}
           </button>
         </form>
       </div>

@@ -424,7 +424,7 @@ function RsvpFormModal({ open, onClose }: { open: boolean; onClose: () => void }
                   <br />
                   이용 목적: 전세버스 탑승 안내 및 연락
                   <br />
-                  보유·이용 기간: 결혼식 종료 후 지체 없이 파기합니다. 동의를 거부하실 수 있으나, 거부 시 전세버스 탑승 여부 전달이 제한될 수 있습니다.
+                  보유·이용 기간: 결혼식 종료 후 지체 없이 파기합니다. 동의를 거부하실 수 있으나, 거부 시 전세버스 탑승 전달이 제한될 수 있습니다.
                 </p>
               </div>
             ) : null}
@@ -451,7 +451,7 @@ function RsvpFormModal({ open, onClose }: { open: boolean; onClose: () => void }
             disabled={isPending}
             className="mt-4 w-full rounded-2xl bg-accent-rose px-4 py-3.5 text-sm font-semibold text-white transition-opacity hover:opacity-92 disabled:opacity-55"
           >
-            {isPending ? "전달 중…" : "전세버스 탑승 여부"}
+            {isPending ? "저장 중…" : "저장하기"}
           </button>
         </form>
       </div>

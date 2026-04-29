@@ -2,9 +2,9 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { createServiceRoleClient } from "@/lib/supabase/admin";
-
-const BOARDING_PLACES = ["고흥", "순천"] as const;
-export type WeddingBusBoardingPlace = (typeof BOARDING_PLACES)[number];
+import {
+  WEDDING_BUS_BOARDING_PLACES,
+} from "@/lib/wedding-rsvp-boarding";
 
 const MAX_COMPANION_SLOTS = 50;
 const MAX_NAME_LENGTH = 120;
@@ -12,13 +12,13 @@ const MAX_NAME_LENGTH = 120;
 export type SubmitWeddingRsvpInput = {
   guestName: string;
   companionNames: string[];
-  boardingPlace: WeddingBusBoardingPlace;
+  boardingPlace: (typeof WEDDING_BUS_BOARDING_PLACES)[number];
 };
 
 export async function submitWeddingRsvp(
   input: SubmitWeddingRsvpInput,
 ): Promise<{ ok: true } | { ok: false; error: string }> {
-  if (!BOARDING_PLACES.includes(input.boardingPlace)) {
+  if (!(WEDDING_BUS_BOARDING_PLACES as readonly string[]).includes(input.boardingPlace)) {
     return { ok: false, error: "탑승 장소가 올바르지 않습니다." };
   }
 

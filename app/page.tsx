@@ -6,6 +6,10 @@ import {
   submitWeddingRsvp,
 } from "@/app/actions/wedding";
 import { createClient as createBrowserSupabaseClient } from "@/lib/supabase/client";
+import {
+  WEDDING_BUS_BOARDING_PLACES,
+  type WeddingBusBoardingPlace,
+} from "@/lib/wedding-rsvp-boarding";
 import { BackgroundMusic } from "@/components/BackgroundMusic";
 import Image from "next/image";
 import {
@@ -232,7 +236,7 @@ function RsvpFormModal({ open, onClose }: { open: boolean; onClose: () => void }
   const [name, setName] = useState("");
   /** 추가 동승자 이름 (대표 성함은 상단 성함 필드) */
   const [companions, setCompanions] = useState<string[]>([""]);
-  const [boardingPlace, setBoardingPlace] = useState<"고흥" | "순천" | null>(null);
+  const [boardingPlace, setBoardingPlace] = useState<WeddingBusBoardingPlace | null>(null);
   const [privacyOpen, setPrivacyOpen] = useState(false);
   const [privacyAgreed, setPrivacyAgreed] = useState(false);
 
@@ -261,7 +265,7 @@ function RsvpFormModal({ open, onClose }: { open: boolean; onClose: () => void }
       return;
     }
     if (boardingPlace === null) {
-      window.alert("탑승장소(고흥/순천)를 선택해 주세요.");
+      window.alert("탑승장소(녹동/고흥/순천)를 선택해 주세요.");
       return;
     }
     if (!privacyAgreed) {
@@ -397,13 +401,13 @@ function RsvpFormModal({ open, onClose }: { open: boolean; onClose: () => void }
                 탑승장소
                 <RequiredMark />
               </span>
-              <div className="grid grid-cols-2 gap-2">
-                {(["고흥", "순천"] as const).map((place) => (
+              <div className="grid grid-cols-3 gap-2">
+                {WEDDING_BUS_BOARDING_PLACES.map((place) => (
                   <button
                     key={place}
                     type="button"
                     onClick={() => setBoardingPlace(place)}
-                    className={`rounded-2xl border px-2 py-3 text-center text-sm transition-colors ${boardingPlace === place ? "border-black bg-black text-white" : "border-black text-text-secondary hover:bg-black/3"}`}
+                    className={`rounded-2xl border px-2 py-3 text-center text-sm transition-colors ${boardingPlace === place ? "border-accent-rose bg-accent-rose font-semibold text-white" : "border-black text-text-secondary hover:bg-black/3"}`}
                   >
                     {place}
                   </button>
@@ -815,9 +819,14 @@ export default function Home() {
   useEffect(() => {
     document.body.style.overflow = "hidden";
 
-    /* 인트로 교차 애니메이션 2.5s 종료 후 잠깐 유지 → 퇴장(0.7s) → 언마운트 */
-    const startFade = window.setTimeout(() => setIsLeavingIntro(true), 3000);
-    const removeIntro = window.setTimeout(() => setShowIntro(false), 3600);
+    /* 인트로 교차 애니메이션 2.5s와 동일 시점에 퇴장(0.7s) 시작 → 언마운트 */
+    const INTRO_MOTION_MS = 2000;
+    const INTRO_LEAVE_MS = 500;
+    const startFade = window.setTimeout(() => setIsLeavingIntro(true), INTRO_MOTION_MS);
+    const removeIntro = window.setTimeout(
+      () => setShowIntro(false),
+      INTRO_MOTION_MS + INTRO_LEAVE_MS,
+    );
 
     return () => {
       window.clearTimeout(startFade);
@@ -923,7 +932,7 @@ export default function Home() {
       >
         <div
           id="scroll-sections-wrapper"
-          className="mx-auto min-h-screen w-full overflow-hidden rounded-none border-x border-border-soft/80 bg-white px-5 pb-18 pt-6 shadow-none sm:px-7 lg:max-w-4xl lg:rounded-[34px] lg:border lg:shadow-[0_24px_80px_rgba(120,88,76,0.12)]"
+          className="mx-auto min-h-screen w-full overflow-hidden rounded-none border-x border-border-soft/80 bg-white px-5 pb-6 pt-6 shadow-none sm:px-7 lg:max-w-4xl lg:rounded-[34px] lg:border lg:shadow-[0_24px_80px_rgba(120,88,76,0.12)]"
         >
 
           {/* 메인 — 콘텐츠 높이에 맞춤 (빈 min-height·flex-1로 섹션 간 공백이 벌어지지 않게) */}
@@ -990,11 +999,6 @@ export default function Home() {
                   <br />
                   남유행 · 김은실의 장녀 <span className="font-semibold text-black">승효</span>
                 </p>
-                <p className="section-body-text mt-7 font-normal sm:mt-8">
-                  2026년 6월 20일 토요일 오후 1시 40분
-                  <br />
-                  아이벡스 컨벤션
-                </p>
               </div>
             </div>
           </section>
@@ -1039,19 +1043,7 @@ export default function Home() {
               })}
             </div>
 
-            <div className="mt-6 flex flex-col items-center gap-2 px-2">
-              <button
-                type="button"
-                onClick={openWeddingCalendar}
-                aria-label="휴대폰 캘린더에 결혼식 일정 추가"
-                className="text-black w-full max-w-[300px] rounded-full border border-black px-4 py-3 text-center text-sm font-medium tracking-wide transition-transform duration-200 hover:-translate-y-0.5 active:scale-[0.98]"
-              >
-                캘린더에 등록
-              </button>
-              <p className="text-xs max-w-[300px] text-center text-black">
-                (카카오톡이 아닌 외부 브라우저에서 <br />사용 가능합니다.)
-              </p>
-            </div>
+
           </section>
 
           {/* 갤러리 */}
@@ -1061,7 +1053,7 @@ export default function Home() {
               alt="갤러리"
               width={320}
               height={54}
-              className="mx-auto h-auto w-full max-w-[240px] -mb-8 -mt-16"
+              className="mx-auto h-auto w-full max-w-[240px] -mb-8 -mt-24"
             />
 
             {/* 3*5 */}
@@ -1093,7 +1085,7 @@ export default function Home() {
 
           {/* 위치 및 지도 */}
           <section id="place" className="scroll-snap-section py-10 sm:py-14">
-            <div className="flex justify-center items-center pt-10">
+            <div className="flex justify-center items-center pt-10 pb-5 -mr-1">
               <Image
                 src="/새-03.png"
                 alt="장식용 새 일러스트"

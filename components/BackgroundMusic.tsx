@@ -8,7 +8,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
  * - 직접 파일 URL: `.mp3` / `.mp4` 등 끝나는 주소
  * - 유튜브: `watch?v=`, `youtu.be/`, `/embed/`, `/shorts/` (IFrame API)
  */
-const BACKGROUND_MEDIA_SRC = "https://www.youtube.com/watch?v=nIRZ496KPP0&list=RDnIRZ496KPP0&start_radio=1";
+const BACKGROUND_MEDIA_SRC = "https://youtu.be/YhQnBDHCMk4?si=fN0_yOHyE6fQ-jZu";
 
 const VOLUME = 0.38;
 

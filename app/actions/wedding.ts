@@ -58,7 +58,7 @@ export async function submitWeddingRsvp(
 }
 
 const MAX_BYTES_PER_FILE = 10 * 1024 * 1024;
-const MAX_FILES_PER_SUBMIT = 30;
+const MAX_FILES_PER_SUBMIT = 50;
 const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
 
 export type GuestPhotoUploadInput = {
@@ -72,11 +72,18 @@ export type GuestPhotoSignedUpload = GuestPhotoUploadInput & {
   token: string;
 };
 
-function sanitizeFilename(name: string): string {
-  const base = name.replace(/[/\\]/g, "").replace(/\s+/g, " ").trim().slice(0, 120);
-  return base.length > 0 ? base : "photo";
-}
+/** Storage 객체 키는 공백·비ASCII 등이 있면 Supabase에서 거부될 수 있어, 경로는 안전한 이름만 씁니다. */
+const GUEST_UPLOAD_EXT_BY_MIME: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+  "image/gif": "gif",
+};
 
+function guestUploadStoragePath(file: GuestPhotoUploadInput): string {
+  const ext = GUEST_UPLOAD_EXT_BY_MIME[file.type] ?? "img";
+  return `guest/${Date.now()}-${crypto.randomUUID()}.${ext}`;
+}
 
 /** 브라우저에서 보낸 파일 메타데이터를 서버에서도 한 번 더 검증합니다. */
 function validateImageMeta(file: GuestPhotoUploadInput): string | null {
@@ -123,8 +130,7 @@ export async function createGuestPhotoUploadUrls(
   const uploads: GuestPhotoSignedUpload[] = [];
 
   for (const file of files) {
-    const safeName = sanitizeFilename(file.name);
-    const path = `guest/${Date.now()}-${crypto.randomUUID()}-${safeName}`;
+    const path = guestUploadStoragePath(file);
     const { data, error } = await admin.storage.from("guest-uploads").createSignedUploadUrl(path);
 
     if (error || !data?.token) {

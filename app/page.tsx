@@ -14,12 +14,14 @@ import { BackgroundMusic } from "@/components/BackgroundMusic";
 import Image from "next/image";
 import {
   useEffect,
+  useCallback,
   useId,
   useRef,
   useState,
   useTransition,
   type ChangeEvent,
   type FormEvent,
+  type PointerEvent as ReactPointerEvent,
   type ReactNode,
 } from "react";
 
@@ -61,6 +63,8 @@ const galleryMoments = [
   { title: "Gallery 14", src: "/gallery/g14.jpeg", rotate: "rotate-[1.1deg]" },
   { title: "Gallery 15", src: "/gallery/g15.jpg", rotate: "-rotate-[1.1deg]" },
 ];
+
+const galleryModalImageSizes = "(max-width: 640px) 100vw, (max-width: 1280px) 100vw, 1280px";
 
 const accountGroups = [
   {
@@ -487,6 +491,7 @@ function GuestPhotoUploader() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [pending, startTransition] = useTransition();
   const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState<{ completed: number; total: number } | null>(null);
   const [notice, setNotice] = useState<{ kind: "ok" | "err"; text: string } | null>(null);
 
   const openPicker = () => {
@@ -501,6 +506,7 @@ function GuestPhotoUploader() {
     if (files.length === 0) return;
 
     setNotice(null);
+    setProgress({ completed: 0, total: files.length });
     setUploading(true);
     startTransition(() => {
       void (async () => {
@@ -531,6 +537,8 @@ function GuestPhotoUploader() {
             if (error) {
               throw error;
             }
+
+            setProgress({ completed: i + 1, total: uploadPlan.uploads.length });
           }
 
           const completedUploads = uploadPlan.uploads.map((upload) => ({
@@ -556,6 +564,7 @@ function GuestPhotoUploader() {
           });
         } finally {
           setUploading(false);
+          setProgress(null);
         }
       })();
     });
@@ -580,6 +589,11 @@ function GuestPhotoUploader() {
       >
         {uploading || pending ? "업로드 중…" : "Upload"}
       </button>
+      {(uploading || pending) && progress ? (
+        <p className="mt-3 text-sm text-text-secondary" aria-live="polite">
+          {progress.completed}/{progress.total}
+        </p>
+      ) : null}
       {notice ? (
         <p
           className={`mt-3 text-sm ${notice.kind === "ok" ? "text-foreground" : "text-black"}`}
@@ -689,20 +703,59 @@ function NoticeSectionHeading({ children }: { children: ReactNode }) {
 
 function GalleryModal({
   moment,
+  preloadMoments,
   onClose,
+  onNext,
+  onPrevious,
 }: {
   moment: (typeof galleryMoments)[number] | null;
+  preloadMoments: (typeof galleryMoments)[number][];
   onClose: () => void;
+  onNext: () => void;
+  onPrevious: () => void;
 }) {
-  const [imageReady, setImageReady] = useState(false);
+  const [loadedImageSrc, setLoadedImageSrc] = useState<string | null>(null);
+  const swipeStartRef = useRef<{ x: number; y: number; pointerId: number } | null>(null);
 
-  useEffect(() => {
-    setImageReady(false);
-  }, [moment?.src]);
+  const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    swipeStartRef.current = {
+      x: event.clientX,
+      y: event.clientY,
+      pointerId: event.pointerId,
+    };
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+
+  const handlePointerUp = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const start = swipeStartRef.current;
+    swipeStartRef.current = null;
+
+    if (!start || start.pointerId !== event.pointerId) {
+      return;
+    }
+
+    const deltaX = event.clientX - start.x;
+    const deltaY = event.clientY - start.y;
+    const absX = Math.abs(deltaX);
+    const absY = Math.abs(deltaY);
+
+    if (absX < 48 || absX < absY * 1.25) {
+      return;
+    }
+
+    event.preventDefault();
+    if (deltaX < 0) {
+      onNext();
+    } else {
+      onPrevious();
+    }
+  };
 
   if (!moment) {
     return null;
   }
+
+  const imageReady = loadedImageSrc === moment.src;
 
   return (
     <div
@@ -723,8 +776,13 @@ function GalleryModal({
       </button>
 
       <div
-        className="gallery-modal-panel relative w-full max-w-5xl overflow-hidden"
+        className="gallery-modal-panel relative w-full max-w-5xl touch-pan-y overflow-hidden"
         onClick={(event) => event.stopPropagation()}
+        onPointerDown={handlePointerDown}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={() => {
+          swipeStartRef.current = null;
+        }}
       >
         <div className="relative aspect-[4/5] max-h-[min(100vh-8rem,920px)] w-full overflow-hidden sm:aspect-[5/4]">
           {!imageReady ? (
@@ -743,13 +801,27 @@ function GalleryModal({
             src={moment.src}
             alt={moment.title}
             fill
-            sizes="100vw"
+            sizes={galleryModalImageSizes}
             priority
             fetchPriority="high"
             className={`relative z-[2] object-contain transition-opacity duration-300 ease-out ${imageReady ? "opacity-100" : "opacity-0"}`}
-            onLoadingComplete={() => setImageReady(true)}
-            onError={() => setImageReady(true)}
+            onLoadingComplete={() => setLoadedImageSrc(moment.src)}
+            onError={() => setLoadedImageSrc(moment.src)}
           />
+          <div className="pointer-events-none absolute inset-0 opacity-0" aria-hidden="true">
+            {preloadMoments.map((preloadMoment) => (
+              <Image
+                key={preloadMoment.src}
+                src={preloadMoment.src}
+                alt=""
+                fill
+                sizes={galleryModalImageSizes}
+                loading="eager"
+                fetchPriority="low"
+                className="object-contain"
+              />
+            ))}
+          </div>
         </div>
       </div>
     </div>
@@ -777,6 +849,49 @@ function IntroOverlay({ isLeaving }: { isLeaving: boolean }) {
           ))}
         </div>
       </div>
+    </div>
+  );
+}
+
+function GalleryWarmupPreloader({ active }: { active: boolean }) {
+  const [enabled, setEnabled] = useState(false);
+
+  useEffect(() => {
+    if (!active) {
+      return;
+    }
+
+    const connection = (navigator as Navigator & { connection?: { saveData?: boolean } })
+      .connection;
+    if (connection?.saveData) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => setEnabled(true), 650);
+    return () => window.clearTimeout(timer);
+  }, [active]);
+
+  if (!enabled) {
+    return null;
+  }
+
+  return (
+    <div
+      className="pointer-events-none fixed -left-px -top-px h-px w-px overflow-hidden opacity-0"
+      aria-hidden="true"
+    >
+      {galleryMoments.map((moment) => (
+        <Image
+          key={moment.src}
+          src={moment.src}
+          alt=""
+          fill
+          sizes={galleryModalImageSizes}
+          loading="eager"
+          fetchPriority="low"
+          className="object-contain"
+        />
+      ))}
     </div>
   );
 }
@@ -810,11 +925,30 @@ function SectionOrnament({
 export default function Home() {
   const [showIntro, setShowIntro] = useState(true);
   const [isLeavingIntro, setIsLeavingIntro] = useState(false);
-  const [selectedMoment, setSelectedMoment] = useState<(typeof galleryMoments)[number] | null>(null);
+  const [selectedMomentIndex, setSelectedMomentIndex] = useState<number | null>(null);
   const [copiedAccount, setCopiedAccount] = useState<string | null>(null);
   const [rsvpPromoOpen, setRsvpPromoOpen] = useState(false);
   const [rsvpFormOpen, setRsvpFormOpen] = useState(false);
   const [accountModalGroup, setAccountModalGroup] = useState<AccountGroup | null>(null);
+  const selectedMoment =
+    selectedMomentIndex === null ? null : (galleryMoments[selectedMomentIndex] ?? null);
+  const selectedAdjacentMoments =
+    selectedMomentIndex === null
+      ? []
+      : [
+          galleryMoments[(selectedMomentIndex - 1 + galleryMoments.length) % galleryMoments.length],
+          galleryMoments[(selectedMomentIndex + 1) % galleryMoments.length],
+        ];
+  const showPreviousGalleryMoment = useCallback(() => {
+    setSelectedMomentIndex((current) =>
+      current === null ? current : (current - 1 + galleryMoments.length) % galleryMoments.length,
+    );
+  }, []);
+  const showNextGalleryMoment = useCallback(() => {
+    setSelectedMomentIndex((current) =>
+      current === null ? current : (current + 1) % galleryMoments.length,
+    );
+  }, []);
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -863,17 +997,25 @@ export default function Home() {
       return;
     }
 
-    if (!selectedMoment && !rsvpPromoOpen && !rsvpFormOpen && !accountModalGroup) {
+    if (selectedMomentIndex === null && !rsvpPromoOpen && !rsvpFormOpen && !accountModalGroup) {
       document.body.style.overflow = "";
       return;
     }
 
     const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "ArrowLeft" && selectedMomentIndex !== null) {
+        showPreviousGalleryMoment();
+        return;
+      }
+      if (event.key === "ArrowRight" && selectedMomentIndex !== null) {
+        showNextGalleryMoment();
+        return;
+      }
       if (event.key !== "Escape") return;
       if (rsvpFormOpen) setRsvpFormOpen(false);
       else if (rsvpPromoOpen) setRsvpPromoOpen(false);
       else if (accountModalGroup) setAccountModalGroup(null);
-      else setSelectedMoment(null);
+      else setSelectedMomentIndex(null);
     };
 
     document.body.style.overflow = "hidden";
@@ -883,7 +1025,15 @@ export default function Home() {
       document.body.style.overflow = "";
       window.removeEventListener("keydown", handleEscape);
     };
-  }, [showIntro, selectedMoment, rsvpPromoOpen, rsvpFormOpen, accountModalGroup]);
+  }, [
+    showIntro,
+    selectedMomentIndex,
+    rsvpPromoOpen,
+    rsvpFormOpen,
+    accountModalGroup,
+    showPreviousGalleryMoment,
+    showNextGalleryMoment,
+  ]);
 
   const dismissRsvpPromoToday = () => {
     try {
@@ -910,8 +1060,15 @@ export default function Home() {
   return (
     <>
       {showIntro ? <IntroOverlay isLeaving={isLeavingIntro} /> : null}
+      <GalleryWarmupPreloader active={showIntro} />
       {!showIntro ? <BackgroundMusic /> : null}
-      <GalleryModal moment={selectedMoment} onClose={() => setSelectedMoment(null)} />
+      <GalleryModal
+        moment={selectedMoment}
+        preloadMoments={selectedAdjacentMoments}
+        onClose={() => setSelectedMomentIndex(null)}
+        onNext={showNextGalleryMoment}
+        onPrevious={showPreviousGalleryMoment}
+      />
       <RsvpPromoSheet
         open={rsvpPromoOpen}
         onClose={() => setRsvpPromoOpen(false)}
@@ -1059,11 +1216,11 @@ export default function Home() {
             {/* 3*5 */}
             <div className="mx-[-20px] overflow-hidden sm:mx-[-28px]">
               <div className="grid grid-cols-3 gap-0">
-                {galleryMoments.map((moment) => (
+                {galleryMoments.map((moment, index) => (
                   <button
                     key={moment.title}
                     type="button"
-                    onClick={() => setSelectedMoment(moment)}
+                    onClick={() => setSelectedMomentIndex(index)}
                     className="gallery-polaroid group block w-full text-left"
                     aria-label={`${moment.title} image preview`}
                   >
@@ -1253,7 +1410,7 @@ export default function Home() {
                 소중한 추억을 함께 나누어요
               </p>
               <p className="section-body-text mt-2 text-text-secondary">
-                사진 여러 장을 한 번에 선택할 수 있어요.
+                사진은 한 번에 최대 50장까지 선택할 수 있어요.
               </p>
               <p className="section-body-text text-gray-400/80">
                 (단일 파일 최대 용량 10MB)

@@ -716,7 +716,7 @@ function AccountGroupModal({
 
 function NoticeSectionHeading({ children }: { children: ReactNode }) {
   return (
-    <p className="flex items-center justify-center gap-1.5 font-medium">
+    <p className="flex items-center justify-center gap-1.5 font-semibold">
       <svg
         className="h-[1.05em] w-[1.05em] shrink-0 text-black"
         viewBox="0 0 24 24"
@@ -979,9 +979,9 @@ export default function Home() {
     selectedMomentIndex === null
       ? []
       : [
-          galleryMoments[(selectedMomentIndex - 1 + galleryMoments.length) % galleryMoments.length],
-          galleryMoments[(selectedMomentIndex + 1) % galleryMoments.length],
-        ];
+        galleryMoments[(selectedMomentIndex - 1 + galleryMoments.length) % galleryMoments.length],
+        galleryMoments[(selectedMomentIndex + 1) % galleryMoments.length],
+      ];
   const showPreviousGalleryMoment = useCallback(() => {
     setSelectedMomentIndex((current) =>
       current === null ? current : (current - 1 + galleryMoments.length) % galleryMoments.length,
@@ -1304,11 +1304,11 @@ export default function Home() {
                 alt="아이벡스컨벤션 안내 이미지"
                 width={320}
                 height={54}
-                className="mx-auto h-auto w-full max-w-[300px]"
+                className="mx-auto h-auto w-full max-w-[min(100%,336px)]"
               />
 
-              <div className="section-body-text mx-auto mt-6 w-full max-w-[300px] px-1 pb-2 text-center font-normal text-foreground">
-                <p className="font-medium text-black">아이벡스컨벤션</p>
+              <div className="section-body-text mx-auto mt-6 w-full max-w-[min(100%,336px)] px-2 pb-2 text-center font-normal text-foreground">
+                <p className="font-semibold text-black">아이벡스컨벤션</p>
                 <p className="mt-1.5">
                   경기 광명시 양지로 17
                   <br />
@@ -1328,15 +1328,56 @@ export default function Home() {
                     <p>- 주차장 : AK 플라자 B3-B8, 주차 2시간 무료</p>
                   </div>
                   <div className="space-y-1">
-                    <NoticeSectionHeading>지하철 / KTX</NoticeSectionHeading>
-                    <p>- 1호선 광명역 : 1번 출구 도보 5분</p>
-                    <p>
-                      - 1호선 관악역 : 1번출구 &gt; 마을버스 1-1 승차 &gt; <br />광명역데시앙.일직동행정복지센터 하차
-                    </p>
-                  </div>
-                  <div className="space-y-1">
-                    <NoticeSectionHeading>버스</NoticeSectionHeading>
-                    <p>- 광역버스 8507 <br />(사당역 4번출구 ↔ KTX광명역3번출구)</p>
+                    <NoticeSectionHeading>대중교통</NoticeSectionHeading>
+                    <div className="mt-1 space-y-3 break-keep text-center leading-relaxed">
+                      <p>
+                        📍광명역 이용 시 (1호선 / KTX)
+                        <br />
+                        광명역 1번 출구에서 도보 5분
+                      </p>
+                      <p>
+                        ⚠️ 광명역 방면 1호선 지하철은
+                        <br />
+                        배차 간격이 긴 편이므로 미리 시간 확인 후
+                        <br />
+                        이용 부탁드립니다.
+                      </p>
+                      <p>
+                        * 예식 전 도착 가능한 마지막 열차
+                        <br />
+                        금천구청역 12:46 출발 → 광명역 12:51 도착
+                      </p>
+                      <p>
+                        * 해당 열차는 4량 열차로,
+                        <br />
+                        승강장 1-1 ~ 4-4 위치에서만 탑승 가능합니다.
+                      </p>
+
+                      <p className="pt-2">
+                        📍 관악역 이용 시 (1호선)
+                        <br />
+                        관악역 1번 출구 앞
+                        <br />
+                        → 마을버스 1-1번 탑승
+                        <br />
+                        → 광명역데시앙 · 일직동행정복지센터 하차
+                      </p>
+
+                      <p className="pt-2">
+                        📍 사당역 이용 시 (2호선 / 4호선)
+                        <br />
+                        사당역 4번 출구 앞
+                        <br />
+                        → 광역버스 8507번 탑승
+                        <br />
+                        → KTX광명역 3번 출구 하차
+                      </p>
+                      <p>
+                        * 사당역에서 광역버스 이용 시
+                        <br />
+                        환승 없이 편하게 오실 수 있습니다.
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>

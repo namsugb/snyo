@@ -66,6 +66,42 @@ const galleryMoments = [
 
 const galleryModalImageSizes = "(max-width: 640px) 100vw, (max-width: 1280px) 100vw, 1280px";
 
+function useBodyScrollLock(locked: boolean) {
+  useEffect(() => {
+    if (!locked) {
+      return;
+    }
+
+    const scrollY = window.scrollY;
+    const { body } = document;
+    const previousStyles = {
+      left: body.style.left,
+      overflow: body.style.overflow,
+      position: body.style.position,
+      right: body.style.right,
+      top: body.style.top,
+      width: body.style.width,
+    };
+
+    body.style.left = "0";
+    body.style.overflow = "hidden";
+    body.style.position = "fixed";
+    body.style.right = "0";
+    body.style.top = `-${scrollY}px`;
+    body.style.width = "100%";
+
+    return () => {
+      body.style.left = previousStyles.left;
+      body.style.overflow = previousStyles.overflow;
+      body.style.position = previousStyles.position;
+      body.style.right = previousStyles.right;
+      body.style.top = previousStyles.top;
+      body.style.width = previousStyles.width;
+      window.scrollTo(0, scrollY);
+    };
+  }, [locked]);
+}
+
 const accountGroups = [
   {
     title: "신랑측 계좌번호",
@@ -726,6 +762,12 @@ function GalleryModal({
     event.currentTarget.setPointerCapture(event.pointerId);
   };
 
+  const handlePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (swipeStartRef.current?.pointerId === event.pointerId) {
+      event.preventDefault();
+    }
+  };
+
   const handlePointerUp = (event: ReactPointerEvent<HTMLDivElement>) => {
     const start = swipeStartRef.current;
     swipeStartRef.current = null;
@@ -759,7 +801,7 @@ function GalleryModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/82 px-3 pt-14 pb-10 sm:px-6"
+      className="fixed inset-0 z-50 flex touch-none items-center justify-center overscroll-contain bg-black/82 px-3 pt-14 pb-10 sm:px-6"
       role="dialog"
       aria-modal="true"
       aria-busy={!imageReady}
@@ -776,9 +818,10 @@ function GalleryModal({
       </button>
 
       <div
-        className="gallery-modal-panel relative w-full max-w-5xl touch-pan-y overflow-hidden"
+        className="gallery-modal-panel relative w-full max-w-5xl touch-none overflow-hidden"
         onClick={(event) => event.stopPropagation()}
         onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={() => {
           swipeStartRef.current = null;
@@ -949,10 +992,16 @@ export default function Home() {
       current === null ? current : (current + 1) % galleryMoments.length,
     );
   }, []);
+  const pageScrollLocked =
+    showIntro ||
+    selectedMomentIndex !== null ||
+    rsvpPromoOpen ||
+    rsvpFormOpen ||
+    accountModalGroup !== null;
+
+  useBodyScrollLock(pageScrollLocked);
 
   useEffect(() => {
-    document.body.style.overflow = "hidden";
-
     /* 인트로 교차 애니메이션 2.5s와 동일 시점에 퇴장(0.7s) 시작 → 언마운트 */
     const INTRO_MOTION_MS = 2000;
     const INTRO_LEAVE_MS = 500;
@@ -965,7 +1014,6 @@ export default function Home() {
     return () => {
       window.clearTimeout(startFade);
       window.clearTimeout(removeIntro);
-      document.body.style.overflow = "";
     };
   }, []);
 
@@ -993,12 +1041,10 @@ export default function Home() {
 
   useEffect(() => {
     if (showIntro) {
-      document.body.style.overflow = "hidden";
       return;
     }
 
     if (selectedMomentIndex === null && !rsvpPromoOpen && !rsvpFormOpen && !accountModalGroup) {
-      document.body.style.overflow = "";
       return;
     }
 
@@ -1018,11 +1064,9 @@ export default function Home() {
       else setSelectedMomentIndex(null);
     };
 
-    document.body.style.overflow = "hidden";
     window.addEventListener("keydown", handleEscape);
 
     return () => {
-      document.body.style.overflow = "";
       window.removeEventListener("keydown", handleEscape);
     };
   }, [

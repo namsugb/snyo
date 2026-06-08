@@ -108,7 +108,7 @@ const accountGroups = [
     entries: [
       { name: "윤준영", bank: "국민은행", account: "756002 00 010858" },
       { name: "윤우영", bank: "국민은행", account: "827 21 0642 281" },
-      { name: "이민자", bank: "우리은행", account: "129 07 020930" },
+      { name: "이민자", bank: "우리은행", account: "1002 649 743493" },
     ],
   },
   {

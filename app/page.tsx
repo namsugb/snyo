@@ -339,7 +339,7 @@ function RsvpPromoSheet({
           }}
           className="mt-7 w-full rounded-2xl bg-accent-rose px-4 py-3.5 text-center text-sm font-semibold text-white transition-opacity hover:opacity-92 active:opacity-88"
         >
-          전세버스 탑승 여부
+          신청하기
         </button>
       </div>
       <div className="relative z-10 flex justify-end gap-2 px-5 py-3 text-xs">
@@ -1571,7 +1571,7 @@ export default function Home() {
                 onClick={() => setRsvpFormOpen(true)}
                 className="mt-7 w-full max-w-md mx-auto rounded-full bg-accent-rose px-4 py-3.5 text-center text-sm font-semibold text-white transition-opacity hover:opacity-92 active:opacity-88"
               >
-                전세버스 탑승 여부
+                신청하기
               </button>
             </div>
 

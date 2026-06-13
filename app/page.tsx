@@ -154,8 +154,27 @@ const WEDDING_RSVP_DETAILS = {
   where: "아이벡스컨벤션",
   whereFull: "경기 광명시 양지로 17 AK 플라자 광명 5층 아이벡스컨벤션",
   /** 전세버스 노선 안내 */
-  busRoute: "녹동 출발 → 고흥 → 순천 → 광명 도착",
+  busRoute: "녹동 출발 → 도덕 → 순천 → 광명 도착",
 } as const;
+
+const WEDDING_BUS_STOPS: {
+  place: WeddingBusBoardingPlace;
+  time: string;
+  location: string;
+}[] = [
+  { place: "녹동", time: "7:10", location: "도양읍민회관" },
+  { place: "도덕", time: "7:20", location: "우체국 앞 주차장" },
+  { place: "순천", time: "8:10", location: "법원 주차장 / 투썸 건너편" },
+];
+
+const WEDDING_BUS_RETURN_STOPS: {
+  place: string;
+  time: string;
+  detail: string;
+}[] = [
+  { place: "광명", time: "15:00", detail: "예식장 출발" },
+  { place: "순천", time: "19:00", detail: "도착 예정" },
+];
 
 function RsvpIntroCopy({ className = "" }: { className?: string }) {
   return (
@@ -166,6 +185,82 @@ function RsvpIntroCopy({ className = "" }: { className?: string }) {
       <br />
       아래 정보를 남겨주시면 감사하겠습니다.
     </p>
+  );
+}
+
+function RsvpBusRouteGuide({
+  className = "",
+  selectedPlace = null,
+  compact = false,
+}: {
+  className?: string;
+  selectedPlace?: WeddingBusBoardingPlace | null;
+  compact?: boolean;
+}) {
+  return (
+    <div
+      className={`mx-auto w-full max-w-sm rounded-[22px] border border-border-soft bg-white/80 px-4 py-4 text-left shadow-[0_10px_30px_rgba(120,88,76,0.06)] ${className}`}
+    >
+      <div className="flex items-center justify-center gap-3">
+        <p className="text-xs font-semibold tracking-[0.18em] text-accent-rose">BUS ROUTE</p>   
+      </div>
+      <p className="mt-3 text-xs font-semibold text-foreground">예식장으로 오는 길</p>
+      <div className={compact ? "mt-3 space-y-2" : "mt-4 space-y-3"}>
+        {WEDDING_BUS_STOPS.map((stop) => {
+          const isSelected = selectedPlace === stop.place;
+          return (
+            <div
+              key={stop.place}
+              className={`grid grid-cols-[54px_1fr] gap-3 rounded-2xl border px-3 py-3 transition-colors ${
+                isSelected
+                  ? "border-accent-rose bg-accent-rose/10"
+                  : "border-border-soft bg-surface/70"
+              }`}
+            >
+              <div className="flex flex-col items-center justify-center rounded-xl bg-white px-2 py-1.5 text-center shadow-[0_4px_14px_rgba(120,88,76,0.06)]">
+                <span className={`text-sm font-bold ${isSelected ? "text-accent-rose" : "text-ink-accent"}`}>
+                  {stop.time}
+                </span>
+                <span className="mt-0.5 text-[10px] font-medium text-text-secondary">{stop.place}</span>
+              </div>
+              <div className="flex min-w-0 flex-col justify-center">
+                <p className="text-sm font-semibold text-foreground">{stop.place} 출발</p>
+                <p className="mt-1 text-xs leading-relaxed text-text-secondary">{stop.location}</p>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <div className="mt-4 border-t border-border-soft pt-4">
+        <p className="text-xs font-semibold text-foreground">예식 후 내려가는 길</p>
+        <div className={compact ? "mt-3 space-y-2" : "mt-4 space-y-3"}>
+          {WEDDING_BUS_RETURN_STOPS.map((stop) => (
+            <div
+              key={`${stop.place}-${stop.time}`}
+              className="grid grid-cols-[54px_1fr] gap-3 rounded-2xl border border-border-soft bg-surface/70 px-3 py-3"
+            >
+              <div className="flex flex-col items-center justify-center rounded-xl bg-white px-2 py-1.5 text-center shadow-[0_4px_14px_rgba(120,88,76,0.06)]">
+                <span className="text-sm font-bold text-ink-accent">{stop.time}</span>
+                <span className="mt-0.5 text-[10px] font-medium text-text-secondary">{stop.place}</span>
+              </div>
+              <div className="flex min-w-0 flex-col justify-center">
+                <p className="text-sm font-semibold text-foreground">
+                  {stop.place} {stop.detail}
+                </p>
+                <p className="mt-1 text-xs leading-relaxed text-text-secondary">
+                  {stop.place === "광명" ? "아이벡스컨벤션에서 출발합니다." : "교통 상황에 따라 도착 시간이 달라질 수 있어요."}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      {!compact ? (
+        <p className="mt-3 text-center text-[11px] leading-relaxed text-text-secondary">
+          출발 시간 10분 전까지 도착해 주세요.
+        </p>
+      ) : null}
+    </div>
   );
 }
 
@@ -235,6 +330,7 @@ function RsvpPromoSheet({
         </h2>
         <RsvpIntroCopy className="mt-4" />
         <RsvpEventDetails className="mt-5" />
+        <RsvpBusRouteGuide className="mt-5" compact />
         <button
           type="button"
           onClick={() => {
@@ -305,7 +401,7 @@ function RsvpFormModal({ open, onClose }: { open: boolean; onClose: () => void }
       return;
     }
     if (boardingPlace === null) {
-      window.alert("탑승장소(녹동/고흥/순천)를 선택해 주세요.");
+      window.alert("탑승장소(녹동/도덕/순천)를 선택해 주세요.");
       return;
     }
     if (!privacyAgreed) {
@@ -453,6 +549,7 @@ function RsvpFormModal({ open, onClose }: { open: boolean; onClose: () => void }
                   </button>
                 ))}
               </div>
+              <RsvpBusRouteGuide className="mt-4" selectedPlace={boardingPlace} compact />
             </div>
           </div>
 
@@ -1468,7 +1565,7 @@ export default function Home() {
             {/* 주차관련안내 섹션과 동일한 전폭 회색 배경 */}
             <div className="mx-[-20px] bg-gray-100 px-[20px] py-10 sm:mx-[-28px] sm:px-[28px] sm:py-14">
               <p className="text-center text-base font-bold">전세버스 탑승 여부</p>
-              <RsvpIntroCopy className="mt-4" />
+              <RsvpIntroCopy className="mt-4" />          
               <button
                 type="button"
                 onClick={() => setRsvpFormOpen(true)}

@@ -192,18 +192,22 @@ function RsvpBusRouteGuide({
   className = "",
   selectedPlace = null,
   compact = false,
+  showHeader = true,
 }: {
   className?: string;
   selectedPlace?: WeddingBusBoardingPlace | null;
   compact?: boolean;
+  showHeader?: boolean;
 }) {
   return (
     <div
       className={`mx-auto w-full max-w-sm rounded-[22px] border border-border-soft bg-white/80 px-4 py-4 text-left shadow-[0_10px_30px_rgba(120,88,76,0.06)] ${className}`}
     >
-      <div className="flex items-center justify-center gap-3">
-        <p className="text-xs font-semibold tracking-[0.18em] text-accent-rose">BUS ROUTE</p>   
-      </div>
+      {showHeader ? (
+        <div className="flex items-center justify-center gap-3">
+          <p className="text-xs font-semibold tracking-[0.18em] text-accent-rose">버스 경로 상세보기</p>
+        </div>
+      ) : null}
       <p className="mt-3 text-xs font-semibold text-foreground">예식장으로 오는 길</p>
       <div className={compact ? "mt-3 space-y-2" : "mt-4 space-y-3"}>
         {WEDDING_BUS_STOPS.map((stop) => {
@@ -264,6 +268,52 @@ function RsvpBusRouteGuide({
   );
 }
 
+function RsvpBusRouteDisclosure({
+  className = "",
+  selectedPlace = null,
+  compact = false,
+}: {
+  className?: string;
+  selectedPlace?: WeddingBusBoardingPlace | null;
+  compact?: boolean;
+}) {
+  const routeDetailsId = useId();
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className={`mx-auto w-full max-w-sm ${className}`}>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        aria-controls={routeDetailsId}
+        className="flex w-full items-center justify-center gap-3 rounded-full border border-border-soft bg-white px-4 py-3 text-left text-xs font-semibold tracking-[0.12em] text-ink-accent shadow-[0_8px_22px_rgba(120,88,76,0.06)] transition-colors hover:bg-accent-rose/5"
+      >
+        <div className="flex items-center justify-center gap-3">
+        <span>버스 경로 상세보기</span>
+        <svg
+          viewBox="0 0 24 24"
+          className={`h-4 w-4 text-center justify-center shrink-0 text-text-secondary transition-transform ${open ? "rotate-180" : ""}`}
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden
+        >
+          <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+        </div>
+      </button>
+      {open ? (
+        <div
+          id={routeDetailsId}
+          className="mt-3"
+        >
+          <RsvpBusRouteGuide selectedPlace={selectedPlace} compact={compact} showHeader={false} />
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 function RsvpEventDetails({ className = "" }: { className?: string }) {
   const rows: { k: string; v: string }[] = [
     { k: "주인공", v: WEDDING_RSVP_DETAILS.couple },
@@ -314,7 +364,7 @@ function RsvpPromoSheet({
         aria-label="닫기"
         onClick={onClose}
       />
-      <div className="relative z-10 mx-auto w-full max-w-lg rounded-t-2xl bg-white px-5 pb-6 pt-9 shadow-[0_-12px_48px_rgba(0,0,0,0.14)]">
+      <div className="scrollbar-none relative z-10 mx-auto max-h-[min(86vh,720px)] w-full max-w-lg overflow-y-auto overscroll-contain rounded-t-2xl bg-white px-5 pb-6 pt-9 shadow-[0_-12px_48px_rgba(0,0,0,0.14)]">
         <button
           type="button"
           onClick={onClose}
@@ -330,7 +380,7 @@ function RsvpPromoSheet({
         </h2>
         <RsvpIntroCopy className="mt-4" />
         <RsvpEventDetails className="mt-5" />
-        <RsvpBusRouteGuide className="mt-5" compact />
+        <RsvpBusRouteDisclosure className="mt-5" compact />
         <button
           type="button"
           onClick={() => {
@@ -459,7 +509,7 @@ function RsvpFormModal({ open, onClose }: { open: boolean; onClose: () => void }
           </button>
         </div>
 
-        <form onSubmit={submit} className="min-h-0 flex-1 overflow-y-auto px-5 pb-6 pt-4">
+        <form onSubmit={submit} className="scrollbar-none min-h-0 flex-1 overflow-y-auto px-5 pb-6 pt-4">
           <div className="mt-5 space-y-4">
             <div>
               <label htmlFor="rsvp-name" className="mb-2 block text-sm text-foreground">
@@ -785,7 +835,7 @@ function AccountGroupModal({
             </svg>
           </button>
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5">
+        <div className="scrollbar-none min-h-0 flex-1 overflow-y-auto px-5 py-5">
           <div className="space-y-8">
             {group.entries.map((info) => (
               <article key={`${group.title}-${info.name}-${info.account}`}>
@@ -1565,7 +1615,8 @@ export default function Home() {
             {/* 주차관련안내 섹션과 동일한 전폭 회색 배경 */}
             <div className="mx-[-20px] bg-gray-100 px-[20px] py-10 sm:mx-[-28px] sm:px-[28px] sm:py-14">
               <p className="text-center text-base font-bold">전세버스 탑승 여부</p>
-              <RsvpIntroCopy className="mt-4" />          
+              <RsvpIntroCopy className="mt-4" />
+ 
               <button
                 type="button"
                 onClick={() => setRsvpFormOpen(true)}

@@ -1633,7 +1633,7 @@ export default function Home() {
                 소중한 추억을 함께 나누어요
               </p>
               <p className="section-body-text mt-2 text-text-secondary">
-                사진은 한 번에 최대 50장까지 선택할 수 있어요.
+                사진은 한 번에 최대 30장까지 선택할 수 있어요.
               </p>
               <p className="section-body-text text-gray-400/80">
                 (단일 파일 최대 용량 10MB)

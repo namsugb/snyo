@@ -58,7 +58,7 @@ export async function submitWeddingRsvp(
 }
 
 const MAX_BYTES_PER_FILE = 10 * 1024 * 1024;
-const MAX_FILES_PER_SUBMIT = 50;
+const MAX_FILES_PER_SUBMIT = 30;
 const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
 
 export type GuestPhotoUploadInput = {
